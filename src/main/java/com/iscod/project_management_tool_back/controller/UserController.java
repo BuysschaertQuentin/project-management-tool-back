@@ -1,8 +1,7 @@
 package com.iscod.project_management_tool_back.controller;
 
-import com.iscod.project_management_tool_back.model.User;
-import com.iscod.project_management_tool_back.repository.UserRepository;
-import jakarta.transaction.Transactional;
+import com.iscod.project_management_tool_back.entity.PmtUserDto;
+import com.iscod.project_management_tool_back.service.IPmtUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,35 +13,32 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserRepository userRepository;
+    private final IPmtUserService userService;
 
     @GetMapping
-    @Transactional()
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<PmtUserDto> getAllUsers() {
+        return userService.getAllUsers();
     }
 
     @PostMapping
-    @Transactional
-    public User createUser(@RequestBody User user) {
-        return userRepository.save(user);
+    public PmtUserDto createUser(@RequestBody PmtUserDto user) {
+        // ⚠️ Ici ton service n’a pas encore de méthode save/register
+        // Il faudrait l’ajouter dans IPmtUserService et son implémentation
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     @GetMapping("/{id}")
-    @Transactional()
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        return userRepository.findById(id)
-                .map(user -> ResponseEntity.ok().body(user))
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<PmtUserDto> getUserById(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.findById(id));
     }
 
     @GetMapping("/test")
     public ResponseEntity<String> testConnection() {
         try {
-            long userCount = userRepository.count();
+            long userCount = userService.getAllUsers().size();
             return ResponseEntity.ok("Connexion réussie ! Nombre d'utilisateurs : " + userCount);
         } catch (Exception e) {
-            e.printStackTrace(); // Pour voir l'erreur complète dans les logs
+            e.printStackTrace();
             return ResponseEntity.internalServerError()
                     .body("Erreur de connexion : " + e.getMessage());
         }
