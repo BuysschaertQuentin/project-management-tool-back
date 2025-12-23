@@ -1,0 +1,39 @@
+meta {
+  name: Register
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/auth/register
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "username": "john_doe",
+    "email": "john@example.com",
+    "password": "Password@123"
+  }
+  
+}
+
+docs {
+  # Register a new user
+  
+  Creates a new user account with username, email and password.
+  
+  ## Validations:
+  - **username**: 2-50 characters, must be unique
+  - **email**: valid email format, must be unique
+  - **password**: 8-50 characters, must contain letter + digit + special character (@#$%^&+=/.-) 
+  
+  ## Response:
+  - **201 Created**: User successfully registered
+  - **400 Bad Request**: Validation error or duplicate email/username
+}

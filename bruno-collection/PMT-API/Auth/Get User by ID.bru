@@ -1,0 +1,21 @@
+meta {
+  name: Get User by ID
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/auth/1
+  body: none
+  auth: none
+}
+
+docs {
+  # Get user by ID
+  
+  Retrieve user information by their ID.
+  
+  ## Response:
+  - **200 OK**: User found
+  - **404 Not Found**: User not found
+}

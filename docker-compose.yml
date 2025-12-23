@@ -40,7 +40,7 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_PROFILES_ACTIVE=docker
       - DATABASE_USERNAME=${POSTGRES_USER:-postgres}
       - DATABASE_PASSWORD=${POSTGRES_PASSWORD:-postgres}
     networks:
