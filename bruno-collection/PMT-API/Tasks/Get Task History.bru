@@ -1,0 +1,81 @@
+meta {
+  name: Get Task History
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{baseUrl}}/api/tasks/1/history
+  body: none
+  auth: none
+}
+
+docs {
+  # Get task history (US12)
+  
+  Retrieves the complete modification history of a task.
+  All changes are tracked including creation, assignment, and updates.
+  
+  ## URL parameters:
+  - **id**: Task ID
+  
+  ## Actions tracked:
+  - **CREATE**: Task creation
+  - **ASSIGN**: Task assignment to a user
+  - **UPDATE**: Field modification (name, description, priority, etc.)
+  - **STATUS_CHANGE**: Status changes (TODO → IN_PROGRESS → DONE)
+  
+  ## Response fields:
+  - **action**: Type of action performed
+  - **fieldChanged**: Name of the field that was modified
+  - **oldValue**: Previous value
+  - **newValue**: New value
+  - **username**: User who made the change
+  - **changedAt**: Timestamp of the change
+  
+  ## Example response:
+  ```json
+  [
+    {
+      "id": 3,
+      "taskId": 1,
+      "taskName": "Implémenter l'authentification JWT",
+      "userId": 2,
+      "username": "mariana",
+      "action": "STATUS_CHANGE",
+      "fieldChanged": "status",
+      "oldValue": "TODO",
+      "newValue": "IN_PROGRESS",
+      "changedAt": "2025-12-23T18:45:00"
+    },
+    {
+      "id": 2,
+      "taskId": 1,
+      "taskName": "Implémenter l'authentification JWT",
+      "userId": 3,
+      "username": "nicolas",
+      "action": "ASSIGN",
+      "fieldChanged": "assignedTo",
+      "oldValue": "Non assigné",
+      "newValue": "mariana",
+      "changedAt": "2025-12-23T18:30:00"
+    },
+    {
+      "id": 1,
+      "taskId": 1,
+      "taskName": "Implémenter l'authentification JWT",
+      "userId": 3,
+      "username": "nicolas",
+      "action": "CREATE",
+      "fieldChanged": null,
+      "oldValue": null,
+      "newValue": "Tâche créée: Implémenter l'authentification JWT",
+      "changedAt": "2025-12-23T18:00:00"
+    }
+  ]
+  ```
+  
+  ## Response:
+  - **200 OK**: List of history entries (newest first)
+  - **404 Not Found**: Task not found
+}

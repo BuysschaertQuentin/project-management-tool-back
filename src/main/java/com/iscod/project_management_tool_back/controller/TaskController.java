@@ -16,10 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.iscod.project_management_tool_back.dto.task.AssignTaskRequestDTO;
 import com.iscod.project_management_tool_back.dto.task.CreateTaskRequestDTO;
+import com.iscod.project_management_tool_back.dto.task.TaskHistoryResponseDTO;
 import com.iscod.project_management_tool_back.dto.task.TaskResponseDTO;
 import com.iscod.project_management_tool_back.dto.task.UpdateTaskRequestDTO;
 import com.iscod.project_management_tool_back.entity.Task;
+import com.iscod.project_management_tool_back.entity.TaskHistory;
 import com.iscod.project_management_tool_back.entity.pmtenum.TaskStatusEnum;
+import com.iscod.project_management_tool_back.service.ITaskHistoryService;
 import com.iscod.project_management_tool_back.service.ITaskService;
 
 import jakarta.validation.Valid;
@@ -31,12 +34,11 @@ import lombok.RequiredArgsConstructor;
 public class TaskController {
 
     private final ITaskService taskService;
+    private final ITaskHistoryService taskHistoryService;
 
     /**
      * Create a new task for a project.
      * Only ADMIN and MEMBER can create tasks.
-     * 
-     * SECURITY NOTE: In production, verify user role from JWT token.
      */
     @PostMapping("/projects/{projectId}/tasks")
     public ResponseEntity<TaskResponseDTO> createTask(
@@ -49,10 +51,9 @@ public class TaskController {
 
     /**
      * Get a task by its ID.
-     * All project members (ADMIN, MEMBER, OBSERVER) can view tasks.
      */
     @GetMapping("/tasks/{id}")
-    public ResponseEntity<TaskResponseDTO> getTaskById(@PathVariable Long id) {
+    public ResponseEntity<TaskResponseDTO> getTask(@PathVariable Long id) {
         Task task = taskService.findById(id);
         TaskResponseDTO response = toResponse(task);
         return ResponseEntity.ok(response);
@@ -61,8 +62,6 @@ public class TaskController {
     /**
      * Assign a task to a project member.
      * Only ADMIN and MEMBER can assign tasks.
-     * 
-     * SECURITY NOTE: In production, verify user role from JWT token.
      */
     @PutMapping("/tasks/{id}/assign")
     public ResponseEntity<TaskResponseDTO> assignTask(
@@ -74,10 +73,8 @@ public class TaskController {
     }
 
     /**
-     * Update a task's information.
+     * Update a task.
      * Only ADMIN and MEMBER can update tasks.
-     * 
-     * SECURITY NOTE: In production, verify user role from JWT token.
      */
     @PutMapping("/tasks/{id}")
     public ResponseEntity<TaskResponseDTO> updateTask(
@@ -90,7 +87,6 @@ public class TaskController {
 
     /**
      * Get all tasks for a project, optionally filtered by status (US10 - Dashboard).
-     * Use the status parameter to display tasks on a Kanban-style board.
      */
     @GetMapping("/projects/{projectId}/tasks")
     public ResponseEntity<List<TaskResponseDTO>> getProjectTasks(
@@ -103,7 +99,6 @@ public class TaskController {
                 TaskStatusEnum statusEnum = TaskStatusEnum.fromString(status);
                 tasks = taskService.getTasksByProjectAndStatus(projectId, statusEnum);
             } catch (IllegalArgumentException e) {
-                // Invalid status, return all tasks
                 tasks = taskService.getTasksByProject(projectId);
             }
         } else {
@@ -116,6 +111,20 @@ public class TaskController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * Get task history (US12).
+     * Returns all modifications made to a task, ordered by date (newest first).
+     */
+    @GetMapping("/tasks/{id}/history")
+    public ResponseEntity<List<TaskHistoryResponseDTO>> getTaskHistory(@PathVariable Long id) {
+        taskService.findById(id);
+        
+        List<TaskHistory> history = taskHistoryService.getTaskHistory(id);
+        List<TaskHistoryResponseDTO> response = history.stream()
+                .map(this::toHistoryResponse)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(response);
+    }
 
     private TaskResponseDTO toResponse(Task task) {
         TaskResponseDTO response = new TaskResponseDTO();
@@ -138,6 +147,21 @@ public class TaskController {
             response.setAssignedToUsername(task.getAssignedTo().getUsername());
         }
 
+        return response;
+    }
+
+    private TaskHistoryResponseDTO toHistoryResponse(TaskHistory history) {
+        TaskHistoryResponseDTO response = new TaskHistoryResponseDTO();
+        response.setId(history.getId());
+        response.setTaskId(history.getTask().getId());
+        response.setTaskName(history.getTask().getName());
+        response.setUserId(history.getUser().getId());
+        response.setUsername(history.getUser().getUsername());
+        response.setAction(history.getAction());
+        response.setFieldChanged(history.getFieldChanged());
+        response.setOldValue(history.getOldValue());
+        response.setNewValue(history.getNewValue());
+        response.setChangedAt(history.getChangedAt());
         return response;
     }
 }
