@@ -43,6 +43,13 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
       - DATABASE_USERNAME=${POSTGRES_USER:-postgres}
       - DATABASE_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      # Email configuration (SMTP)
+      - MAIL_HOST=${MAIL_HOST:-smtp.gmail.com}
+      - MAIL_PORT=${MAIL_PORT:-587}
+      - MAIL_USERNAME=${MAIL_USERNAME:-}
+      - MAIL_PASSWORD=${MAIL_PASSWORD:-}
+      - MAIL_FROM=${MAIL_FROM:-noreply@pmt.com}
+      - MAIL_ENABLED=${MAIL_ENABLED:-false}
     networks:
       - app-network
 

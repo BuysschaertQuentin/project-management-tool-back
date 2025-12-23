@@ -1,0 +1,28 @@
+meta {
+  name: Get User Notifications
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/users/1/notifications
+  body: none
+  auth: none
+}
+
+docs {
+  # Get all notifications for a user (US11)
+  
+  Retrieves all notifications for a specific user, ordered by date (newest first).
+  
+  Notifications are created when:
+  - A task is assigned to the user
+  - The user is invited to a project
+  - A task they're assigned to is updated
+  
+  ## URL parameters:
+  - **userId**: User ID
+  
+  ## Response:
+  - **200 OK**: List of notifications
+}

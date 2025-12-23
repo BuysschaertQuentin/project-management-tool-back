@@ -1,0 +1,24 @@
+meta {
+  name: Mark Notification Read
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{baseUrl}}/api/notifications/1/read
+  body: none
+  auth: none
+}
+
+docs {
+  # Mark a notification as read
+  
+  Marks a specific notification as read and records the read timestamp.
+  
+  ## URL parameters:
+  - **id**: Notification ID
+  
+  ## Response:
+  - **200 OK**: Notification marked as read
+  - **404 Not Found**: Notification not found
+}

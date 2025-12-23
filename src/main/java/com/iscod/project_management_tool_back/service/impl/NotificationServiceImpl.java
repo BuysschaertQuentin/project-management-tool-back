@@ -1,8 +1,106 @@
 package com.iscod.project_management_tool_back.service.impl;
 
-import com.iscod.project_management_tool_back.service.INotificationService;
-import org.springframework.stereotype.Service;
+import java.time.LocalDateTime;
+import java.util.List;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.iscod.project_management_tool_back.entity.Notification;
+import com.iscod.project_management_tool_back.entity.PmtUserDto;
+import com.iscod.project_management_tool_back.entity.Project;
+import com.iscod.project_management_tool_back.entity.Task;
+import com.iscod.project_management_tool_back.entity.pmtenum.NotificationTypeEnum;
+import com.iscod.project_management_tool_back.exception.ResourceNotFoundException;
+import com.iscod.project_management_tool_back.repository.INotificationRepository;
+import com.iscod.project_management_tool_back.service.IEmailService;
+import com.iscod.project_management_tool_back.service.INotificationService;
+
+import lombok.RequiredArgsConstructor;
+
+/**
+ * Implementation of the INotificationService interface.
+ * Handles notification creation and email sending (US11).
+ */
 @Service
+@RequiredArgsConstructor
 public class NotificationServiceImpl implements INotificationService {
+
+    private final INotificationRepository notificationRepository;
+    private final IEmailService emailService;
+
+    /**
+     * Creates a notification and sends email when a task is assigned (US11).
+     */
+    @Override
+    @Transactional
+    public Notification notifyTaskAssignment(Task task, PmtUserDto assignee) {
+        // Create notification in database
+        Notification notification = new Notification();
+        notification.setUser(assignee);
+        notification.setTask(task);
+        notification.setProject(task.getProject());
+        notification.setType(NotificationTypeEnum.TASK_ASSIGNED);
+        notification.setMessage(String.format(
+            "La tâche \"%s\" vous a été assignée dans le projet \"%s\"",
+            task.getName(), task.getProject().getName()
+        ));
+        
+        Notification savedNotification = notificationRepository.save(notification);
+        
+        // Send email notification
+        emailService.sendTaskAssignmentEmail(assignee, task);
+        
+        return savedNotification;
+    }
+
+    @Override
+    @Transactional
+    public Notification notifyProjectInvitation(Project project, PmtUserDto invitee, String inviterName) {
+        Notification notification = new Notification();
+        notification.setUser(invitee);
+        notification.setProject(project);
+        notification.setType(NotificationTypeEnum.PROJECT_INVITATION);
+        notification.setMessage(String.format(
+            "%s vous a invité à rejoindre le projet \"%s\"",
+            inviterName, project.getName()
+        ));
+        
+        Notification savedNotification = notificationRepository.save(notification);
+        
+        // Send email notification
+        emailService.sendProjectInvitationEmail(invitee, project.getName(), inviterName);
+        
+        return savedNotification;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Notification> getNotificationsByUser(Long userId) {
+        return notificationRepository.findByUserIdOrderBySentAtDesc(userId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Notification> getUnreadNotificationsByUser(Long userId) {
+        return notificationRepository.findByUserIdAndIsReadFalseOrderBySentAtDesc(userId);
+    }
+
+    @Override
+    @Transactional
+    public Notification markAsRead(Long notificationId) {
+        Notification notification = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Notification not found with id: " + notificationId));
+        
+        notification.setIsRead(true);
+        notification.setReadAt(LocalDateTime.now());
+        
+        return notificationRepository.save(notification);
+    }
+
+    @Override
+    @Transactional
+    public void markAllAsRead(Long userId) {
+        notificationRepository.markAllAsReadByUserId(userId);
+    }
 }
