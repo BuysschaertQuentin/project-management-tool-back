@@ -6,6 +6,7 @@ import com.iscod.project_management_tool_back.dto.task.AssignTaskRequestDTO;
 import com.iscod.project_management_tool_back.dto.task.CreateTaskRequestDTO;
 import com.iscod.project_management_tool_back.dto.task.UpdateTaskRequestDTO;
 import com.iscod.project_management_tool_back.entity.Task;
+import com.iscod.project_management_tool_back.entity.pmtenum.TaskStatusEnum;
 
 /**
  * Service interface for Task management operations.
@@ -57,4 +58,15 @@ public interface ITaskService {
      * @return list of Task entities
      */
     List<Task> getTasksByProject(Long projectId);
+
+    /**
+     * Gets tasks for a project filtered by status (US10 - Dashboard).
+     * Used for displaying tasks on a Kanban-style board grouped by status.
+     *
+     * @param projectId the project ID
+     * @param status the task status to filter by (TODO, IN_PROGRESS, DONE)
+     * @return list of Task entities with the specified status
+     */
+    List<Task> getTasksByProjectAndStatus(Long projectId, TaskStatusEnum status);
 }
+

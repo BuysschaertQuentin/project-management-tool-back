@@ -1,0 +1,39 @@
+meta {
+  name: Get Tasks Dashboard
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/api/projects/1/tasks?status=TODO
+  body: none
+  auth: none
+}
+
+docs {
+  # Get tasks by status - Dashboard (US10)
+  
+  Retrieves tasks for a project filtered by status.
+  Used to display the Kanban-style dashboard board.
+  All project members (ADMIN, MEMBER, OBSERVER) can view the dashboard.
+  
+  ## URL parameters:
+  - **projectId**: Project ID
+  
+  ## Query parameters:
+  - **status** (optional): Filter by status
+    - `TODO` - Tasks not started
+    - `IN_PROGRESS` - Tasks being worked on
+    - `DONE` - Completed tasks
+    - If not provided or invalid, returns all tasks
+  
+  ## Example URLs:
+  - `/api/projects/1/tasks` - All tasks
+  - `/api/projects/1/tasks?status=TODO` - Tasks to do
+  - `/api/projects/1/tasks?status=IN_PROGRESS` - Tasks in progress
+  - `/api/projects/1/tasks?status=DONE` - Completed tasks
+  
+  ## Response:
+  - **200 OK**: List of tasks matching the filter
+  - **404 Not Found**: Project not found
+}

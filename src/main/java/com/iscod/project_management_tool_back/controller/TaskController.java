@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.iscod.project_management_tool_back.dto.task.AssignTaskRequestDTO;
@@ -18,6 +19,7 @@ import com.iscod.project_management_tool_back.dto.task.CreateTaskRequestDTO;
 import com.iscod.project_management_tool_back.dto.task.TaskResponseDTO;
 import com.iscod.project_management_tool_back.dto.task.UpdateTaskRequestDTO;
 import com.iscod.project_management_tool_back.entity.Task;
+import com.iscod.project_management_tool_back.entity.pmtenum.TaskStatusEnum;
 import com.iscod.project_management_tool_back.service.ITaskService;
 
 import jakarta.validation.Valid;
@@ -87,16 +89,33 @@ public class TaskController {
     }
 
     /**
-     * Get all tasks for a project.
+     * Get all tasks for a project, optionally filtered by status (US10 - Dashboard).
+     * Use the status parameter to display tasks on a Kanban-style board.
      */
     @GetMapping("/projects/{projectId}/tasks")
-    public ResponseEntity<List<TaskResponseDTO>> getProjectTasks(@PathVariable Long projectId) {
-        List<Task> tasks = taskService.getTasksByProject(projectId);
+    public ResponseEntity<List<TaskResponseDTO>> getProjectTasks(
+            @PathVariable Long projectId,
+            @RequestParam(required = false) String status) {
+        List<Task> tasks;
+        
+        if (status != null && !status.isBlank()) {
+            try {
+                TaskStatusEnum statusEnum = TaskStatusEnum.fromString(status);
+                tasks = taskService.getTasksByProjectAndStatus(projectId, statusEnum);
+            } catch (IllegalArgumentException e) {
+                // Invalid status, return all tasks
+                tasks = taskService.getTasksByProject(projectId);
+            }
+        } else {
+            tasks = taskService.getTasksByProject(projectId);
+        }
+        
         List<TaskResponseDTO> response = tasks.stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(response);
     }
+
 
     private TaskResponseDTO toResponse(Task task) {
         TaskResponseDTO response = new TaskResponseDTO();

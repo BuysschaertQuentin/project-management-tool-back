@@ -159,4 +159,16 @@ public class TaskServiceImpl implements ITaskService {
         projectService.findById(projectId);
         return taskRepository.findByProjectIdOrderByCreatedAtDesc(projectId);
     }
+
+    /**
+     * Gets tasks for a project filtered by status.
+     * Used for the dashboard/Kanban board view (US10).
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<Task> getTasksByProjectAndStatus(Long projectId, TaskStatusEnum status) {
+        projectService.findById(projectId);
+        return taskRepository.findByProjectIdAndStatus(projectId, status);
+    }
 }
+
