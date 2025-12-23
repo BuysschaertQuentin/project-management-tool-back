@@ -1,0 +1,38 @@
+meta {
+  name: Invite Member
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/projects/1/members
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "email": "member@example.com",
+    "role": "MEMBER"
+  }
+}
+
+docs {
+  # Invite a member to a project
+  
+  Invites a user to join a project by their email address.
+  Only ADMIN members should be able to invite new members.
+  
+  ## Request body:
+  - **email**: Email of the user to invite (required)
+  - **role**: Role to assign - MEMBER or OBSERVER (default: MEMBER)
+  
+  ## Response:
+  - **201 Created**: Member successfully invited
+  - **400 Bad Request**: User is already a member of the project
+  - **404 Not Found**: Project or user not found
+}

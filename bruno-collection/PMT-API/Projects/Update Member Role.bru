@@ -1,0 +1,40 @@
+meta {
+  name: Update Member Role
+  type: http
+  seq: 5
+}
+
+put {
+  url: {{baseUrl}}/api/projects/1/members/2/role
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "role": "ADMIN"
+  }
+}
+
+docs {
+  # Update member role
+  
+  Updates the role of a project member.
+  Only ADMIN members should be able to change roles.
+  
+  ## URL parameters:
+  - **id**: Project ID
+  - **memberId**: Project member ID (not user ID)
+  
+  ## Request body:
+  - **role**: New role - ADMIN, MEMBER, or OBSERVER
+  
+  ## Response:
+  - **200 OK**: Role successfully updated
+  - **400 Bad Request**: Invalid role or member doesn't belong to project
+  - **404 Not Found**: Project or member not found
+}

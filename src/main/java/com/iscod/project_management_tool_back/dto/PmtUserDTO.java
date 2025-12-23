@@ -2,6 +2,7 @@ package com.iscod.project_management_tool_back.dto;
 
 import com.iscod.project_management_tool_back.constraint.PasswordValidator;
 import com.iscod.project_management_tool_back.entity.pmtenum.ProjectRoleEnum;
+
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -26,7 +27,7 @@ public class PmtUserDTO {
     @PasswordValidator
     private String password;
 
-    private ProjectRoleEnum role = ProjectRoleEnum.USER;
+    private ProjectRoleEnum role = ProjectRoleEnum.MEMBER;
 
 }
 

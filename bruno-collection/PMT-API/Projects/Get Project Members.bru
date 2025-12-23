@@ -1,0 +1,21 @@
+meta {
+  name: Get Project Members
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/api/projects/1/members
+  body: none
+  auth: none
+}
+
+docs {
+  # Get all members of a project
+  
+  Retrieves the list of all members belonging to a project.
+  
+  ## Response:
+  - **200 OK**: List of project members
+  - **404 Not Found**: Project not found
+}
