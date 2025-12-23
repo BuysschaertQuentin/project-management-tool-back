@@ -1,0 +1,21 @@
+meta {
+  name: Get Project by ID
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/projects/1
+  body: none
+  auth: none
+}
+
+docs {
+  # Get project by ID
+  
+  Retrieve project information by its ID.
+  
+  ## Response:
+  - **200 OK**: Project found
+  - **404 Not Found**: Project not found
+}

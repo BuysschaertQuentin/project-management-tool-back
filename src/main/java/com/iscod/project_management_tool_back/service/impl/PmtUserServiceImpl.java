@@ -15,6 +15,10 @@ import com.iscod.project_management_tool_back.service.IPmtUserService;
 
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Implementation of the IPmtUserService interface.
+ * Handles user authentication, registration, and retrieval operations.
+ */
 @Service
 @RequiredArgsConstructor
 public class PmtUserServiceImpl implements IPmtUserService {
@@ -55,12 +59,8 @@ public class PmtUserServiceImpl implements IPmtUserService {
 
     @Override
     public PmtUserDto findById(Long id) {
-        try {
-            return userRepository.findById(id)
-                    .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
-        } catch (ResourceNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
     }
 
     @Override
