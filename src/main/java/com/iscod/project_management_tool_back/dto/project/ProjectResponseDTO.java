@@ -13,7 +13,7 @@ public class ProjectResponseDTO {
     private String description;
     private LocalDate startDate;
     private LocalDate endDate;
-    private Long createdById;
+    private Long createdByUserId;
     private String createdByUsername;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

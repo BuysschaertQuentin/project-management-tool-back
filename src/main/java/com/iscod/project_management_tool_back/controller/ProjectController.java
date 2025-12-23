@@ -103,7 +103,7 @@ public class ProjectController {
         response.setDescription(project.getDescription());
         response.setStartDate(project.getStartDate());
         response.setEndDate(project.getEndDate());
-        response.setCreatedById(project.getCreatedBy().getId());
+        response.setCreatedByUserId(project.getCreatedBy().getId());
         response.setCreatedByUsername(project.getCreatedBy().getUsername());
         response.setCreatedAt(project.getCreatedAt());
         response.setUpdatedAt(project.getUpdatedAt());

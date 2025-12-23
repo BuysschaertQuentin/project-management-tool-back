@@ -21,10 +21,15 @@ body:json {
 }
 
 docs {
-  # Update member role
+  # Update member role (US5)
   
   Updates the role of a project member.
-  Only ADMIN members should be able to change roles.
+  Only ADMIN members can change roles.
+  
+  ## Roles and permissions:
+  - **ADMIN**: Full project control (invite, assign roles, create/update tasks)
+  - **MEMBER**: Can create and update tasks, view project
+  - **OBSERVER**: Read-only access, receives notifications
   
   ## URL parameters:
   - **id**: Project ID
@@ -35,6 +40,6 @@ docs {
   
   ## Response:
   - **200 OK**: Role successfully updated
-  - **400 Bad Request**: Invalid role or member doesn't belong to project
+  - **400 Bad Request**: Invalid role
   - **404 Not Found**: Project or member not found
 }

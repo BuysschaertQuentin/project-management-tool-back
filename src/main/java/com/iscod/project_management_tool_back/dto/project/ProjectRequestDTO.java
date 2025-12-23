@@ -21,5 +21,5 @@ public class ProjectRequestDTO {
     private LocalDate startDate;
 
     @NotNull(message = "Creator user ID is required")
-    private Long createdById;
+    private Long createdByUserId;
 }

@@ -16,26 +16,33 @@ headers {
 
 body:json {
   {
-    "name": "My First Project",
-    "description": "A sample project for testing the API",
-    "startDate": "2025-01-01",
-    "createdById": 1
+    "name": "PMT - Application Mobile",
+    "description": "Développement de l'application mobile PMT pour la gestion de projets collaboratifs. Cette application permettra aux équipes de planifier, suivre et collaborer sur des projets de développement logiciel.",
+    "startDate": "2025-01-06",
+    "createdByUserId": 1
   }
 }
 
 docs {
-  # Create a new project
+  # Create a new project (US3)
   
-  Creates a new project. The user specified by createdById automatically becomes an ADMIN member of the project.
+  Creates a new project. The creator automatically becomes an ADMIN member.
+  
+  ## Example projects:
+  - PMT - Application Mobile
+  - PMT - Backend API
+  - PMT - Frontend Web
+  - Sprint 1 - Authentification
+  - Refactoring Base de données
   
   ## Request body:
   - **name**: Project name (2-100 characters, required)
-  - **description**: Project description (max 2000 characters, optional)
-  - **startDate**: Project start date in YYYY-MM-DD format (required)
-  - **createdById**: ID of the user creating the project (required)
+  - **description**: Project description (max 2000 characters)
+  - **startDate**: Start date in YYYY-MM-DD format (required)
+  - **createdByUserId**: ID of the user creating the project (required)
   
   ## Response:
   - **201 Created**: Project successfully created
   - **400 Bad Request**: Validation error
-  - **404 Not Found**: User with createdById not found
+  - **404 Not Found**: User not found
 }

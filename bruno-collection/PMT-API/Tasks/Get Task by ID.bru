@@ -1,0 +1,35 @@
+meta {
+  name: Get Task by ID
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/tasks/1
+  body: none
+  auth: none
+}
+
+docs {
+  # Get task details (US9)
+  
+  Retrieves a task with all its information.
+  All project members (ADMIN, MEMBER, OBSERVER) can view tasks.
+  
+  ## Response includes:
+  - Task ID, name, description
+  - Project information
+  - Status (TODO, IN_PROGRESS, DONE)
+  - Priority (LOW, MEDIUM, HIGH, URGENT)
+  - Assigned user (if any)
+  - Creator information
+  - Due date and completion date
+  - Created and updated timestamps
+  
+  ## URL parameters:
+  - **id**: Task ID
+  
+  ## Response:
+  - **200 OK**: Task found
+  - **404 Not Found**: Task not found
+}

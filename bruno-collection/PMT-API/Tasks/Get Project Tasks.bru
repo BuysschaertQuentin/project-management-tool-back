@@ -1,0 +1,30 @@
+meta {
+  name: Get Project Tasks
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/api/projects/1/tasks
+  body: none
+  auth: none
+}
+
+docs {
+  # Get all tasks for a project
+  
+  Retrieves all tasks belonging to a project, ordered by creation date (newest first).
+  All project members can view project tasks.
+  
+  This endpoint is useful for:
+  - Displaying the task list in a project view
+  - Building the Kanban board (US10)
+  - Generating project reports
+  
+  ## URL parameters:
+  - **projectId**: Project ID
+  
+  ## Response:
+  - **200 OK**: List of tasks with full details
+  - **404 Not Found**: Project not found
+}

@@ -16,17 +16,21 @@ headers {
 
 body:json {
   {
-    "email": "john@example.com",
-    "password": "Password@123"
+    "email": "john.doe@codesolutions.com",
+    "password": "SecurePass123!"
   }
 }
 
 docs {
-  # Login user
+  # Login (US2)
   
-  Authenticate a user with email and password.
+  Allows registered users to login with their email and password.
+  
+  ## Request body:
+  - **email**: User's email address (required)
+  - **password**: User's password (required)
   
   ## Response:
-  - **200 OK**: User successfully authenticated
-  - **401 Unauthorized**: Invalid credentials
+  - **200 OK**: Login successful, returns user info
+  - **401 Unauthorized**: Invalid email or password
 }

@@ -16,16 +16,21 @@ headers {
 
 body:json {
   {
-    "email": "member@example.com",
+    "email": "mariana@codesolutions.com",
     "role": "MEMBER"
   }
 }
 
 docs {
-  # Invite a member to a project
+  # Invite a member to a project (US4)
   
   Invites a user to join a project by their email address.
-  Only ADMIN members should be able to invite new members.
+  Only ADMIN members can invite new members.
+  
+  ## Roles:
+  - **ADMIN**: Can manage project, invite members, assign roles, create/update tasks
+  - **MEMBER**: Can create and update tasks, view project
+  - **OBSERVER**: Can only view project and tasks, receive notifications
   
   ## Request body:
   - **email**: Email of the user to invite (required)
@@ -33,6 +38,6 @@ docs {
   
   ## Response:
   - **201 Created**: Member successfully invited
-  - **400 Bad Request**: User is already a member of the project
+  - **400 Bad Request**: User is already a member
   - **404 Not Found**: Project or user not found
 }

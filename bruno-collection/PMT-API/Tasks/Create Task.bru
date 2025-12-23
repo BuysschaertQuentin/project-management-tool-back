@@ -1,0 +1,56 @@
+meta {
+  name: Create Task
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/projects/1/tasks
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "name": "Implémenter l'authentification JWT",
+    "description": "Ajouter l'authentification basée sur JWT tokens pour sécuriser les endpoints de l'API. Inclure la génération de tokens, la validation et le refresh token.",
+    "dueDate": "2025-01-15",
+    "priority": "HIGH",
+    "createdByUserId": 1
+  }
+}
+
+docs {
+  # Create a new task (US6)
+  
+  Creates a new task for a project.
+  Only ADMIN and MEMBER can create tasks.
+  
+  ## Example tasks for a development project:
+  - Implémenter l'authentification JWT
+  - Configurer la base de données PostgreSQL
+  - Développer les endpoints REST API
+  - Créer les composants Angular
+  - Écrire les tests unitaires
+  - Configurer la pipeline CI/CD
+  - Dockeriser l'application
+  - Documenter l'API
+  
+  ## Priorities: LOW, MEDIUM, HIGH, URGENT
+  
+  ## Request body:
+  - **name**: Task name (2-200 characters, required)
+  - **description**: Task description (max 2000 characters)
+  - **dueDate**: Due date in YYYY-MM-DD format (required)
+  - **priority**: Priority level (required)
+  - **createdByUserId**: ID of user creating the task (required)
+  
+  ## Response:
+  - **201 Created**: Task successfully created
+  - **400 Bad Request**: Validation error or user not a project member
+  - **404 Not Found**: Project or user not found
+}

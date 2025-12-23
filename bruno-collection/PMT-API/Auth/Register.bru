@@ -1,5 +1,5 @@
 meta {
-  name: Register
+  name: Register User
   type: http
   seq: 1
 }
@@ -16,24 +16,30 @@ headers {
 
 body:json {
   {
-    "username": "john_doe",
-    "email": "john@example.com",
-    "password": "Password@123"
+    "username": "john.doe",
+    "email": "john.doe@codesolutions.com",
+    "password": "SecurePass123!"
   }
-  
 }
 
 docs {
-  # Register a new user
+  # Register a new user (US1)
   
-  Creates a new user account with username, email and password.
+  Allows visitors to register with a username, email and password.
   
-  ## Validations:
-  - **username**: 2-50 characters, must be unique
-  - **email**: valid email format, must be unique
-  - **password**: 8-50 characters, must contain letter + digit + special character (@#$%^&+=/.-) 
+  ## Example users for testing:
+  - john.doe@codesolutions.com (CEO)
+  - nicolas@codesolutions.com (Product Owner)
+  - mariana@codesolutions.com (Tech Lead)
+  - dev1@codesolutions.com (Developer)
+  - dev2@codesolutions.com (Developer)
+  
+  ## Request body:
+  - **username**: Username (2-50 characters, required)
+  - **email**: Valid email address (required)
+  - **password**: Password with uppercase, lowercase, number and special char (required)
   
   ## Response:
   - **201 Created**: User successfully registered
-  - **400 Bad Request**: Validation error or duplicate email/username
+  - **400 Bad Request**: Validation error or email/username already taken
 }

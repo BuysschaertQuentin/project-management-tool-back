@@ -44,8 +44,8 @@ public class ProjectServiceImpl implements IProjectService {
     @Override
     @Transactional
     public Project createProject(ProjectRequestDTO request) {
-        PmtUserDto creator = userRepository.findById(request.getCreatedById())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + request.getCreatedById()));
+        PmtUserDto creator = userRepository.findById(request.getCreatedByUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + request.getCreatedByUserId()));
 
         Project project = new Project();
         project.setName(request.getName());

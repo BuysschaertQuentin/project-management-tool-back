@@ -1,0 +1,51 @@
+meta {
+  name: Update Task
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{baseUrl}}/api/tasks/1
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "name": "Implémenter l'authentification JWT - v2",
+    "description": "Mise à jour: Ajouter également la gestion des rôles utilisateurs dans le JWT payload.",
+    "status": "IN_PROGRESS",
+    "priority": "URGENT",
+    "dueDate": "2025-01-20"
+  }
+}
+
+docs {
+  # Update a task (US8)
+  
+  Updates any information of a task or adds a completion date.
+  Only ADMIN and MEMBER can update tasks.
+  All fields are optional - only provided fields will be updated.
+  
+  ## Status workflow:
+  - **TODO** → Task not started
+  - **IN_PROGRESS** → Task being worked on
+  - **DONE** → Task completed (completedDate auto-set if not provided)
+  
+  ## Request body (all optional):
+  - **name**: New task name (2-200 characters)
+  - **description**: New description
+  - **status**: TODO, IN_PROGRESS, or DONE
+  - **priority**: LOW, MEDIUM, HIGH, or URGENT
+  - **dueDate**: New due date (YYYY-MM-DD)
+  - **completedDate**: Completion date (YYYY-MM-DD)
+  
+  ## Response:
+  - **200 OK**: Task successfully updated
+  - **400 Bad Request**: Invalid status or priority
+  - **404 Not Found**: Task not found
+}
