@@ -1,7 +1,7 @@
 package com.iscod.project_management_tool_back.repository;
 
 import com.iscod.project_management_tool_back.dto.login.LoginRequestDTO;
-import com.iscod.project_management_tool_back.entity.PmtUserDto;
+import com.iscod.project_management_tool_back.entity.PmtUser;
 import com.iscod.project_management_tool_back.exception.ResourceNotFoundException;
 import com.iscod.project_management_tool_back.service.impl.PmtUserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,14 +35,14 @@ class PmtUserServiceImplTest {
         request.setEmail("john@example.com");
         request.setPassword("password123");
 
-        PmtUserDto user = new PmtUserDto();
+        PmtUser user = new PmtUser();
         user.setId(1L);
         user.setEmail("john@example.com");
         user.setPassword("password123");
 
         when(userRepository.findByEmail("john@example.com")).thenReturn(Optional.of(user));
 
-        PmtUserDto result = userService.login(request);
+        PmtUser result = userService.login(request);
 
         assertNotNull(result);
         assertEquals("john@example.com", result.getEmail());
@@ -54,7 +54,7 @@ class PmtUserServiceImplTest {
         request.setEmail("john@example.com");
         request.setPassword("wrongpass");
 
-        PmtUserDto user = new PmtUserDto();
+        PmtUser user = new PmtUser();
         user.setEmail("john@example.com");
         user.setPassword("password123");
 
@@ -76,13 +76,13 @@ class PmtUserServiceImplTest {
 
     @Test
     void findById_ShouldReturnUser_WhenExists() {
-        PmtUserDto user = new PmtUserDto();
+        PmtUser user = new PmtUser();
         user.setId(1L);
         user.setUsername("john");
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
-        PmtUserDto result = userService.findById(1L);
+        PmtUser result = userService.findById(1L);
 
         assertNotNull(result);
         assertEquals(1L, result.getId());

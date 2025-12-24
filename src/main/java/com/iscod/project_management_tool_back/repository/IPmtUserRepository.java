@@ -1,6 +1,6 @@
 package com.iscod.project_management_tool_back.repository;
 
-import com.iscod.project_management_tool_back.entity.PmtUserDto;
+import com.iscod.project_management_tool_back.entity.PmtUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -8,17 +8,17 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface IPmtUserRepository extends JpaRepository<PmtUserDto, Long> {
+public interface IPmtUserRepository extends JpaRepository<PmtUser, Long> {
 
-    Optional<PmtUserDto> findByEmail(String email);
+    Optional<PmtUser> findByEmail(String email);
 
-    Optional<PmtUserDto> findByUsername(String username);
+    Optional<PmtUser> findByUsername(String username);
 
     boolean existsByEmail(String email);
 
     boolean existsByUsername(String username);
 
-    List<PmtUserDto> findByEmailIn(List<String> emails);
+    List<PmtUser> findByEmailIn(List<String> emails);
 
-    List<PmtUserDto> findByUsernameOrEmailContaining(String search, String email);
+    List<PmtUser> findByUsernameOrEmailContaining(String search, String email);
 }

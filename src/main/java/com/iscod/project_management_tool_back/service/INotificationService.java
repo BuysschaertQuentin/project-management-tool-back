@@ -3,7 +3,7 @@ package com.iscod.project_management_tool_back.service;
 import java.util.List;
 
 import com.iscod.project_management_tool_back.entity.Notification;
-import com.iscod.project_management_tool_back.entity.PmtUserDto;
+import com.iscod.project_management_tool_back.entity.PmtUser;
 import com.iscod.project_management_tool_back.entity.Project;
 import com.iscod.project_management_tool_back.entity.Task;
 
@@ -21,7 +21,7 @@ public interface INotificationService {
      * @param assignee the user the task is assigned to
      * @return the created Notification
      */
-    Notification notifyTaskAssignment(Task task, PmtUserDto assignee);
+    Notification notifyTaskAssignment(Task task, PmtUser assignee);
 
     /**
      * Creates a notification when a user is invited to a project.
@@ -31,7 +31,7 @@ public interface INotificationService {
      * @param inviterName name of the user who invited
      * @return the created Notification
      */
-    Notification notifyProjectInvitation(Project project, PmtUserDto invitee, String inviterName);
+    Notification notifyProjectInvitation(Project project, PmtUser invitee, String inviterName);
 
     /**
      * Gets all notifications for a user.

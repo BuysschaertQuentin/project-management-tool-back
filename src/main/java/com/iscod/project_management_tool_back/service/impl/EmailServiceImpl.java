@@ -9,7 +9,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import com.iscod.project_management_tool_back.entity.PmtUserDto;
+import com.iscod.project_management_tool_back.entity.PmtUser;
 import com.iscod.project_management_tool_back.entity.Task;
 import com.iscod.project_management_tool_back.service.IEmailService;
 
@@ -35,7 +35,7 @@ public class EmailServiceImpl implements IEmailService {
      */
     @Override
     @Async
-    public void sendTaskAssignmentEmail(PmtUserDto assignee, Task task) {
+    public void sendTaskAssignmentEmail(PmtUser assignee, Task task) {
         String subject = "[PMT] Nouvelle tâche assignée : " + task.getName();
         String body = buildTaskAssignmentEmailBody(assignee, task);
         
@@ -44,7 +44,7 @@ public class EmailServiceImpl implements IEmailService {
 
     @Override
     @Async
-    public void sendProjectInvitationEmail(PmtUserDto invitee, String projectName, String inviterName) {
+    public void sendProjectInvitationEmail(PmtUser invitee, String projectName, String inviterName) {
         String subject = "[PMT] Invitation au projet : " + projectName;
         String body = String.format(
             """
@@ -65,7 +65,7 @@ public class EmailServiceImpl implements IEmailService {
 
     @Override
     @Async
-    public void sendTaskUpdateEmail(PmtUserDto user, Task task, String changes) {
+    public void sendTaskUpdateEmail(PmtUser user, Task task, String changes) {
         String subject = "[PMT] Tâche mise à jour : " + task.getName();
         String body = String.format(
             """
@@ -126,7 +126,7 @@ public class EmailServiceImpl implements IEmailService {
         }
     }
 
-    private String buildTaskAssignmentEmailBody(PmtUserDto assignee, Task task) {
+    private String buildTaskAssignmentEmailBody(PmtUser assignee, Task task) {
         return String.format(
             """
             Bonjour %s,

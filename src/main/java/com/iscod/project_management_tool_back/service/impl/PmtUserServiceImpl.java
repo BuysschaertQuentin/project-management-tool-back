@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.iscod.project_management_tool_back.dto.login.LoginRequestDTO;
 import com.iscod.project_management_tool_back.dto.login.RegisterRequestDTO;
-import com.iscod.project_management_tool_back.entity.PmtUserDto;
+import com.iscod.project_management_tool_back.entity.PmtUser;
 import com.iscod.project_management_tool_back.exception.BadRequestException;
 import com.iscod.project_management_tool_back.exception.ResourceNotFoundException;
 import com.iscod.project_management_tool_back.repository.IPmtUserRepository;
@@ -26,7 +26,7 @@ public class PmtUserServiceImpl implements IPmtUserService {
     private final IPmtUserRepository userRepository;
 
     @Override
-    public PmtUserDto login(LoginRequestDTO request) {
+    public PmtUser login(LoginRequestDTO request) {
         return userRepository.findByEmail(request.getEmail())
                 .filter(user -> user.getPassword().equals(request.getPassword()))
                 .orElseThrow(() -> new AuthenticationException("Invalid email or password") {
@@ -41,14 +41,14 @@ public class PmtUserServiceImpl implements IPmtUserService {
      * user.setPassword(passwordEncoder.encode(request.getPassword()));
      */
     @Override
-    public PmtUserDto register(RegisterRequestDTO request) {
+    public PmtUser register(RegisterRequestDTO request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new BadRequestException("Email is already in use");
         }
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new BadRequestException("Username is already taken");
         }
-        PmtUserDto newUser = new PmtUserDto();
+        PmtUser newUser = new PmtUser();
         newUser.setUsername(request.getUsername());
         newUser.setEmail(request.getEmail());
         // SECURITY NOTE: Password should be hashed in production
@@ -58,13 +58,13 @@ public class PmtUserServiceImpl implements IPmtUserService {
     }
 
     @Override
-    public PmtUserDto findById(Long id) {
+    public PmtUser findById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
     }
 
     @Override
-    public List<PmtUserDto> getAllUsers() {
+    public List<PmtUser> getAllUsers() {
         return userRepository.findAll();
     }
 }

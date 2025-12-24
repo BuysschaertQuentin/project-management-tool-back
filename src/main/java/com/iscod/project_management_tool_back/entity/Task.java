@@ -22,8 +22,6 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -39,13 +37,11 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", nullable = false)
     private Project project;
 
-    @NotBlank(message = "Task name is required")
-    @Size(max = 200)
-    @Column(nullable = false)
+    @Column(nullable = false, length = 200)
     private String name;
 
     @Column(columnDefinition = "TEXT")
@@ -59,13 +55,13 @@ public class Task {
     @Column(nullable = false)
     private TaskPriorityEnum priority = TaskPriorityEnum.MEDIUM;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assigned_to")
-    private PmtUserDto assignedTo;
+    private PmtUser assignedTo;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by", nullable = false)
-    private PmtUserDto createdBy;
+    private PmtUser createdBy;
 
     @Column(name = "due_date")
     private LocalDate dueDate;
@@ -79,14 +75,13 @@ public class Task {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    // Relations for history and notifications
-    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<TaskHistory> history;
 
-    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Notification> notifications;
 
-    public Task(Project project, String name, String description, PmtUserDto createdBy) {
+    public Task(Project project, String name, String description, PmtUser createdBy) {
         this.project = project;
         this.name = name;
         this.description = description;

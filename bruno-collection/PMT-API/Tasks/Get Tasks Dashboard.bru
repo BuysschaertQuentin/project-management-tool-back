@@ -5,9 +5,13 @@ meta {
 }
 
 get {
-  url: {{baseUrl}}/api/projects/1/tasks?status=TODO
+  url: {{baseUrl}}/api/projects/1/tasks?status=IN_PROGRESS
   body: none
   auth: none
+}
+
+params:query {
+  status: IN_PROGRESS
 }
 
 docs {

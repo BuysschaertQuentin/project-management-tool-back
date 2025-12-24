@@ -1,6 +1,6 @@
 package com.iscod.project_management_tool_back.service;
 
-import com.iscod.project_management_tool_back.entity.PmtUserDto;
+import com.iscod.project_management_tool_back.entity.PmtUser;
 import com.iscod.project_management_tool_back.entity.Task;
 
 /**
@@ -16,7 +16,7 @@ public interface IEmailService {
      * @param assignee the user the task is assigned to
      * @param task the assigned task
      */
-    void sendTaskAssignmentEmail(PmtUserDto assignee, Task task);
+    void sendTaskAssignmentEmail(PmtUser assignee, Task task);
 
     /**
      * Sends a project invitation notification email.
@@ -25,7 +25,7 @@ public interface IEmailService {
      * @param projectName the project name
      * @param inviterName the name of the user who sent the invitation
      */
-    void sendProjectInvitationEmail(PmtUserDto invitee, String projectName, String inviterName);
+    void sendProjectInvitationEmail(PmtUser invitee, String projectName, String inviterName);
 
     /**
      * Sends a task update notification email.
@@ -34,5 +34,5 @@ public interface IEmailService {
      * @param task the updated task
      * @param changes description of changes made
      */
-    void sendTaskUpdateEmail(PmtUserDto user, Task task, String changes);
+    void sendTaskUpdateEmail(PmtUser user, Task task, String changes);
 }

@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.iscod.project_management_tool_back.entity.PmtUserDto;
+import com.iscod.project_management_tool_back.entity.PmtUser;
 import com.iscod.project_management_tool_back.entity.Task;
 import com.iscod.project_management_tool_back.entity.TaskHistory;
 import com.iscod.project_management_tool_back.repository.ITaskHistoryRepository;
@@ -25,7 +25,7 @@ public class TaskHistoryServiceImpl implements ITaskHistoryService {
 
     @Override
     @Transactional
-    public TaskHistory recordChange(Task task, PmtUserDto user, String action, String fieldChanged, String oldValue, String newValue) {
+    public TaskHistory recordChange(Task task, PmtUser user, String action, String fieldChanged, String oldValue, String newValue) {
         TaskHistory history = new TaskHistory();
         history.setTask(task);
         history.setUser(user);
@@ -39,7 +39,7 @@ public class TaskHistoryServiceImpl implements ITaskHistoryService {
 
     @Override
     @Transactional
-    public TaskHistory recordCreation(Task task, PmtUserDto creator) {
+    public TaskHistory recordCreation(Task task, PmtUser creator) {
         return recordChange(
             task, 
             creator, 
@@ -52,7 +52,7 @@ public class TaskHistoryServiceImpl implements ITaskHistoryService {
 
     @Override
     @Transactional
-    public TaskHistory recordAssignment(Task task, PmtUserDto assignedBy, PmtUserDto previousAssignee, PmtUserDto newAssignee) {
+    public TaskHistory recordAssignment(Task task, PmtUser assignedBy, PmtUser previousAssignee, PmtUser newAssignee) {
         String oldValue = previousAssignee != null ? previousAssignee.getUsername() : "Non assigné";
         String newValue = newAssignee != null ? newAssignee.getUsername() : "Non assigné";
         
@@ -68,7 +68,7 @@ public class TaskHistoryServiceImpl implements ITaskHistoryService {
 
     @Override
     @Transactional
-    public TaskHistory recordStatusChange(Task task, PmtUserDto changedBy, String oldStatus, String newStatus) {
+    public TaskHistory recordStatusChange(Task task, PmtUser changedBy, String oldStatus, String newStatus) {
         return recordChange(
             task,
             changedBy,

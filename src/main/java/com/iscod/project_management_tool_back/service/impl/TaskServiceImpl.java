@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.iscod.project_management_tool_back.dto.task.AssignTaskRequestDTO;
 import com.iscod.project_management_tool_back.dto.task.CreateTaskRequestDTO;
 import com.iscod.project_management_tool_back.dto.task.UpdateTaskRequestDTO;
-import com.iscod.project_management_tool_back.entity.PmtUserDto;
+import com.iscod.project_management_tool_back.entity.PmtUser;
 import com.iscod.project_management_tool_back.entity.Project;
 import com.iscod.project_management_tool_back.entity.Task;
 import com.iscod.project_management_tool_back.entity.pmtenum.TaskPriorityEnum;
@@ -41,7 +41,7 @@ public class TaskServiceImpl implements ITaskService {
     public Task createTask(Long projectId, CreateTaskRequestDTO request) {
         Project project = projectService.findById(projectId);
 
-        PmtUserDto creator = userRepository.findById(request.getCreatedByUserId())
+        PmtUser creator = userRepository.findById(request.getCreatedByUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + request.getCreatedByUserId()));
 
         if (!projectMemberRepository.existsByProjectIdAndUserId(projectId, creator.getId())) {
@@ -85,9 +85,9 @@ public class TaskServiceImpl implements ITaskService {
     public Task assignTask(Long taskId, AssignTaskRequestDTO request) {
         Task task = findById(taskId);
 
-        PmtUserDto previousAssignee = task.getAssignedTo();
+        PmtUser previousAssignee = task.getAssignedTo();
 
-        PmtUserDto assignee = userRepository.findById(request.getAssigneeId())
+        PmtUser assignee = userRepository.findById(request.getAssigneeId())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + request.getAssigneeId()));
 
         if (!projectMemberRepository.existsByProjectIdAndUserId(task.getProject().getId(), assignee.getId())) {
@@ -112,7 +112,7 @@ public class TaskServiceImpl implements ITaskService {
         Task task = findById(taskId);
         
         // Get updater (for history) - using createdBy as fallback
-        PmtUserDto updater = task.getCreatedBy();
+        PmtUser updater = task.getCreatedBy();
 
         // Track old status for history
         String oldStatus = task.getStatus().getStatus();

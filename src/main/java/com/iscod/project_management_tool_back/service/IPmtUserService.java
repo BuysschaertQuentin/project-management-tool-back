@@ -4,14 +4,14 @@ import java.util.List;
 
 import com.iscod.project_management_tool_back.dto.login.LoginRequestDTO;
 import com.iscod.project_management_tool_back.dto.login.RegisterRequestDTO;
-import com.iscod.project_management_tool_back.entity.PmtUserDto;
+import com.iscod.project_management_tool_back.entity.PmtUser;
 
 public interface IPmtUserService {
-    PmtUserDto login(LoginRequestDTO request);
+    PmtUser login(LoginRequestDTO request);
 
-    PmtUserDto register(RegisterRequestDTO request);
+    PmtUser register(RegisterRequestDTO request);
 
-    PmtUserDto findById(Long id);
+    PmtUser findById(Long id);
 
-    List<PmtUserDto> getAllUsers();
+    List<PmtUser> getAllUsers();
 }

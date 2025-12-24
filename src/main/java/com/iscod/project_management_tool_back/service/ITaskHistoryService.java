@@ -2,7 +2,7 @@ package com.iscod.project_management_tool_back.service;
 
 import java.util.List;
 
-import com.iscod.project_management_tool_back.entity.PmtUserDto;
+import com.iscod.project_management_tool_back.entity.PmtUser;
 import com.iscod.project_management_tool_back.entity.Task;
 import com.iscod.project_management_tool_back.entity.TaskHistory;
 
@@ -23,22 +23,22 @@ public interface ITaskHistoryService {
      * @param newValue the new value
      * @return the created TaskHistory entry
      */
-    TaskHistory recordChange(Task task, PmtUserDto user, String action, String fieldChanged, String oldValue, String newValue);
+    TaskHistory recordChange(Task task, PmtUser user, String action, String fieldChanged, String oldValue, String newValue);
 
     /**
      * Records task creation.
      */
-    TaskHistory recordCreation(Task task, PmtUserDto creator);
+    TaskHistory recordCreation(Task task, PmtUser creator);
 
     /**
      * Records task assignment.
      */
-    TaskHistory recordAssignment(Task task, PmtUserDto assignedBy, PmtUserDto previousAssignee, PmtUserDto newAssignee);
+    TaskHistory recordAssignment(Task task, PmtUser assignedBy, PmtUser previousAssignee, PmtUser newAssignee);
 
     /**
      * Records task status change.
      */
-    TaskHistory recordStatusChange(Task task, PmtUserDto changedBy, String oldStatus, String newStatus);
+    TaskHistory recordStatusChange(Task task, PmtUser changedBy, String oldStatus, String newStatus);
 
     /**
      * Gets all history entries for a task (US12).

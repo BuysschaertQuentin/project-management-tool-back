@@ -1,12 +1,20 @@
 package com.iscod.project_management_tool_back.controller;
 
-import com.iscod.project_management_tool_back.entity.PmtUserDto;
-import com.iscod.project_management_tool_back.service.IPmtUserService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.iscod.project_management_tool_back.datamapper.PmtUserDatamapper;
+import com.iscod.project_management_tool_back.dto.login.UserResponseDTO;
+import com.iscod.project_management_tool_back.entity.PmtUser;
+import com.iscod.project_management_tool_back.service.IPmtUserService;
+
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/users")
@@ -14,33 +22,20 @@ import java.util.List;
 public class UserController {
 
     private final IPmtUserService userService;
+    private final PmtUserDatamapper userMapper;
 
     @GetMapping
-    public List<PmtUserDto> getAllUsers() {
-        return userService.getAllUsers();
-    }
-
-    @PostMapping
-    public PmtUserDto createUser(@RequestBody PmtUserDto user) {
-        // ⚠️ Ici ton service n’a pas encore de méthode save/register
-        // Il faudrait l’ajouter dans IPmtUserService et son implémentation
-        throw new UnsupportedOperationException("Not implemented yet");
+    public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
+        List<PmtUser> users = userService.getAllUsers();
+        List<UserResponseDTO> response = users.stream()
+                .map(userMapper::toDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PmtUserDto> getUserById(@PathVariable Long id) {
-        return ResponseEntity.ok(userService.findById(id));
-    }
-
-    @GetMapping("/test")
-    public ResponseEntity<String> testConnection() {
-        try {
-            long userCount = userService.getAllUsers().size();
-            return ResponseEntity.ok("Connexion réussie ! Nombre d'utilisateurs : " + userCount);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.internalServerError()
-                    .body("Erreur de connexion : " + e.getMessage());
-        }
+    public ResponseEntity<UserResponseDTO> getUserById(@PathVariable Long id) {
+        PmtUser user = userService.findById(id);
+        return ResponseEntity.ok(userMapper.toDTO(user));
     }
 }

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.iscod.project_management_tool_back.entity.Notification;
-import com.iscod.project_management_tool_back.entity.PmtUserDto;
+import com.iscod.project_management_tool_back.entity.PmtUser;
 import com.iscod.project_management_tool_back.entity.Project;
 import com.iscod.project_management_tool_back.entity.Task;
 import com.iscod.project_management_tool_back.entity.pmtenum.NotificationTypeEnum;
@@ -34,7 +34,7 @@ public class NotificationServiceImpl implements INotificationService {
      */
     @Override
     @Transactional
-    public Notification notifyTaskAssignment(Task task, PmtUserDto assignee) {
+    public Notification notifyTaskAssignment(Task task, PmtUser assignee) {
         // Create notification in database
         Notification notification = new Notification();
         notification.setUser(assignee);
@@ -56,7 +56,7 @@ public class NotificationServiceImpl implements INotificationService {
 
     @Override
     @Transactional
-    public Notification notifyProjectInvitation(Project project, PmtUserDto invitee, String inviterName) {
+    public Notification notifyProjectInvitation(Project project, PmtUser invitee, String inviterName) {
         Notification notification = new Notification();
         notification.setUser(invitee);
         notification.setProject(project);

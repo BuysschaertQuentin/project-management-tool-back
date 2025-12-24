@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.iscod.project_management_tool_back.dto.project.InviteMemberRequestDTO;
 import com.iscod.project_management_tool_back.dto.project.ProjectRequestDTO;
 import com.iscod.project_management_tool_back.dto.project.UpdateMemberRoleDTO;
-import com.iscod.project_management_tool_back.entity.PmtUserDto;
+import com.iscod.project_management_tool_back.entity.PmtUser;
 import com.iscod.project_management_tool_back.entity.Project;
 import com.iscod.project_management_tool_back.entity.ProjectMember;
 import com.iscod.project_management_tool_back.entity.pmtenum.ProjectRoleEnum;
@@ -44,7 +44,7 @@ public class ProjectServiceImpl implements IProjectService {
     @Override
     @Transactional
     public Project createProject(ProjectRequestDTO request) {
-        PmtUserDto creator = userRepository.findById(request.getCreatedByUserId())
+        PmtUser creator = userRepository.findById(request.getCreatedByUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + request.getCreatedByUserId()));
 
         Project project = new Project();
@@ -90,7 +90,7 @@ public class ProjectServiceImpl implements IProjectService {
     public ProjectMember inviteMember(Long projectId, InviteMemberRequestDTO request) {
         Project project = findById(projectId);
 
-        PmtUserDto user = userRepository.findByEmail(request.getEmail())
+        PmtUser user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + request.getEmail()));
 
         if (projectMemberRepository.existsByProjectIdAndUserId(projectId, user.getId())) {
