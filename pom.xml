@@ -131,6 +131,8 @@
                         <exclude>**/entity/**</exclude>
                         <exclude>**/exception/**</exclude>
                         <exclude>**/constraint/**</exclude>
+                        <exclude>**/config/**</exclude>
+                        <exclude>**/service/impl/EmailServiceImpl.class</exclude>
                         <exclude>**/ProjectManagementToolBackApplication.class</exclude>
                     </excludes>
                 </configuration>
