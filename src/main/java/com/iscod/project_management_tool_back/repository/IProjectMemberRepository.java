@@ -29,5 +29,10 @@ public interface IProjectMemberRepository extends JpaRepository<ProjectMember, L
            "WHERE pm.id = :id")
     Optional<ProjectMember> findByIdWithRelations(@Param("id") Long id);
 
-    List<ProjectMember> findByUserId(Long userId);
+    @Query("SELECT pm FROM ProjectMember pm " +
+           "LEFT JOIN FETCH pm.project p " +
+           "LEFT JOIN FETCH p.createdBy " +
+           "LEFT JOIN FETCH pm.user " +
+           "WHERE pm.user.id = :userId")
+    List<ProjectMember> findByUserId(@Param("userId") Long userId);
 }
