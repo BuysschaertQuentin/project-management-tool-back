@@ -23,6 +23,8 @@ import com.iscod.project_management_tool_back.dto.task.UpdateTaskRequestDTO;
 import com.iscod.project_management_tool_back.entity.Task;
 import com.iscod.project_management_tool_back.entity.TaskHistory;
 import com.iscod.project_management_tool_back.entity.pmtenum.TaskStatusEnum;
+import com.iscod.project_management_tool_back.exception.BadRequestException;
+import com.iscod.project_management_tool_back.exception.ResourceNotFoundException;
 import com.iscod.project_management_tool_back.service.ITaskHistoryService;
 import com.iscod.project_management_tool_back.service.ITaskService;
 
@@ -41,13 +43,15 @@ public class TaskController {
     @PostMapping("/projects/{projectId}/tasks")
     public ResponseEntity<TaskResponseDTO> createTask(
             @PathVariable Long projectId,
-            @Valid @RequestBody CreateTaskRequestDTO request) {
+            @Valid @RequestBody CreateTaskRequestDTO request) 
+            throws ResourceNotFoundException, BadRequestException {
         Task task = taskService.createTask(projectId, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(taskMapper.toDTO(task));
     }
 
     @GetMapping("/tasks/{id}")
-    public ResponseEntity<TaskResponseDTO> getTask(@PathVariable Long id) {
+    public ResponseEntity<TaskResponseDTO> getTask(@PathVariable Long id) 
+            throws ResourceNotFoundException {
         Task task = taskService.findById(id);
         return ResponseEntity.ok(taskMapper.toDTO(task));
     }
@@ -55,7 +59,8 @@ public class TaskController {
     @PutMapping("/tasks/{id}/assign")
     public ResponseEntity<TaskResponseDTO> assignTask(
             @PathVariable Long id,
-            @Valid @RequestBody AssignTaskRequestDTO request) {
+            @Valid @RequestBody AssignTaskRequestDTO request) 
+            throws ResourceNotFoundException, BadRequestException {
         Task task = taskService.assignTask(id, request);
         return ResponseEntity.ok(taskMapper.toDTO(task));
     }
@@ -63,7 +68,8 @@ public class TaskController {
     @PutMapping("/tasks/{id}")
     public ResponseEntity<TaskResponseDTO> updateTask(
             @PathVariable Long id,
-            @Valid @RequestBody UpdateTaskRequestDTO request) {
+            @Valid @RequestBody UpdateTaskRequestDTO request) 
+            throws ResourceNotFoundException, BadRequestException {
         Task task = taskService.updateTask(id, request);
         return ResponseEntity.ok(taskMapper.toDTO(task));
     }
@@ -71,7 +77,8 @@ public class TaskController {
     @GetMapping("/projects/{projectId}/tasks")
     public ResponseEntity<List<TaskResponseDTO>> getProjectTasks(
             @PathVariable Long projectId,
-            @RequestParam(required = false) String status) {
+            @RequestParam(required = false) String status) 
+            throws ResourceNotFoundException {
         List<Task> tasks;
         
         if (status != null && !status.isBlank()) {
@@ -92,7 +99,8 @@ public class TaskController {
     }
 
     @GetMapping("/tasks/{id}/history")
-    public ResponseEntity<List<TaskHistoryResponseDTO>> getTaskHistory(@PathVariable Long id) {
+    public ResponseEntity<List<TaskHistoryResponseDTO>> getTaskHistory(@PathVariable Long id) 
+            throws ResourceNotFoundException {
         taskService.findById(id);
         
         List<TaskHistory> history = taskHistoryService.getTaskHistory(id);

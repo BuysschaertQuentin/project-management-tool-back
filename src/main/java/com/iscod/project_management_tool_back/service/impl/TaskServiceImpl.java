@@ -38,11 +38,12 @@ public class TaskServiceImpl implements ITaskService {
 
     @Override
     @Transactional
-    public Task createTask(Long projectId, CreateTaskRequestDTO request) {
+    public Task createTask(Long projectId, CreateTaskRequestDTO request) 
+            throws ResourceNotFoundException, BadRequestException {
         Project project = projectService.findById(projectId);
 
         PmtUser creator = userRepository.findById(request.getCreatedByUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + request.getCreatedByUserId()));
+                .orElseThrow(() -> new ResourceNotFoundException("User", request.getCreatedByUserId()));
 
         if (!projectMemberRepository.existsByProjectIdAndUserId(projectId, creator.getId())) {
             throw new BadRequestException("User is not a member of this project");
@@ -52,8 +53,7 @@ public class TaskServiceImpl implements ITaskService {
         try {
             priority = TaskPriorityEnum.fromString(request.getPriority());
         } catch (IllegalArgumentException e) {
-            throw new BadRequestException("Invalid priority: " + request.getPriority() + 
-                ". Valid values are: LOW, MEDIUM, HIGH, URGENT");
+            throw new BadRequestException("priority", "Valid values are: LOW, MEDIUM, HIGH, URGENT");
         }
 
         Task task = new Task();
@@ -66,8 +66,6 @@ public class TaskServiceImpl implements ITaskService {
         task.setCreatedBy(creator);
 
         Task savedTask = taskRepository.save(task);
-
-        // Record creation in history (US12)
         taskHistoryService.recordCreation(savedTask, creator);
 
         return savedTask;
@@ -75,20 +73,20 @@ public class TaskServiceImpl implements ITaskService {
 
     @Override
     @Transactional(readOnly = true)
-    public Task findById(Long id) {
-        return taskRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Task not found with id: " + id));
+    public Task findById(Long id) throws ResourceNotFoundException {
+        return taskRepository.findByIdWithRelations(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Task", id));
     }
 
     @Override
     @Transactional
-    public Task assignTask(Long taskId, AssignTaskRequestDTO request) {
+    public Task assignTask(Long taskId, AssignTaskRequestDTO request) 
+            throws ResourceNotFoundException, BadRequestException {
         Task task = findById(taskId);
-
         PmtUser previousAssignee = task.getAssignedTo();
 
         PmtUser assignee = userRepository.findById(request.getAssigneeId())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + request.getAssigneeId()));
+                .orElseThrow(() -> new ResourceNotFoundException("User", request.getAssigneeId()));
 
         if (!projectMemberRepository.existsByProjectIdAndUserId(task.getProject().getId(), assignee.getId())) {
             throw new BadRequestException("Assignee is not a member of this project");
@@ -97,10 +95,7 @@ public class TaskServiceImpl implements ITaskService {
         task.setAssignedTo(assignee);
         Task savedTask = taskRepository.save(task);
 
-        // Record assignment in history (US12)
         taskHistoryService.recordAssignment(savedTask, assignee, previousAssignee, assignee);
-
-        // Send notification email to assignee (US11)
         notificationService.notifyTaskAssignment(savedTask, assignee);
 
         return savedTask;
@@ -108,13 +103,10 @@ public class TaskServiceImpl implements ITaskService {
 
     @Override
     @Transactional
-    public Task updateTask(Long taskId, UpdateTaskRequestDTO request) {
+    public Task updateTask(Long taskId, UpdateTaskRequestDTO request) 
+            throws ResourceNotFoundException, BadRequestException {
         Task task = findById(taskId);
-        
-        // Get updater (for history) - using createdBy as fallback
         PmtUser updater = task.getCreatedBy();
-
-        // Track old status for history
         String oldStatus = task.getStatus().getStatus();
 
         if (request.getName() != null && !request.getName().isBlank()) {
@@ -141,17 +133,16 @@ public class TaskServiceImpl implements ITaskService {
                 task.setPriority(TaskPriorityEnum.fromString(request.getPriority()));
                 taskHistoryService.recordChange(task, updater, "UPDATE", "priority", oldPriority, request.getPriority());
             } catch (IllegalArgumentException e) {
-                throw new BadRequestException("Invalid priority: " + request.getPriority());
+                throw new BadRequestException("priority", request.getPriority());
             }
         }
 
         if (request.getStatus() != null && !request.getStatus().isBlank()) {
             try {
                 task.setStatus(TaskStatusEnum.fromString(request.getStatus()));
-                // Record status change specifically
                 taskHistoryService.recordStatusChange(task, updater, oldStatus, request.getStatus());
             } catch (IllegalArgumentException e) {
-                throw new BadRequestException("Invalid status: " + request.getStatus());
+                throw new BadRequestException("status", request.getStatus());
             }
         }
 
@@ -164,14 +155,15 @@ public class TaskServiceImpl implements ITaskService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Task> getTasksByProject(Long projectId) {
+    public List<Task> getTasksByProject(Long projectId) throws ResourceNotFoundException {
         projectService.findById(projectId);
         return taskRepository.findByProjectIdOrderByCreatedAtDesc(projectId);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Task> getTasksByProjectAndStatus(Long projectId, TaskStatusEnum status) {
+    public List<Task> getTasksByProjectAndStatus(Long projectId, TaskStatusEnum status) 
+            throws ResourceNotFoundException {
         projectService.findById(projectId);
         return taskRepository.findByProjectIdAndStatus(projectId, status);
     }

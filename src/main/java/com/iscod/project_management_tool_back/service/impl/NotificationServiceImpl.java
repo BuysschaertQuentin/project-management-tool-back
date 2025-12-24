@@ -18,10 +18,6 @@ import com.iscod.project_management_tool_back.service.INotificationService;
 
 import lombok.RequiredArgsConstructor;
 
-/**
- * Implementation of the INotificationService interface.
- * Handles notification creation and email sending (US11).
- */
 @Service
 @RequiredArgsConstructor
 public class NotificationServiceImpl implements INotificationService {
@@ -29,13 +25,9 @@ public class NotificationServiceImpl implements INotificationService {
     private final INotificationRepository notificationRepository;
     private final IEmailService emailService;
 
-    /**
-     * Creates a notification and sends email when a task is assigned (US11).
-     */
     @Override
     @Transactional
     public Notification notifyTaskAssignment(Task task, PmtUser assignee) {
-        // Create notification in database
         Notification notification = new Notification();
         notification.setUser(assignee);
         notification.setTask(task);
@@ -47,8 +39,6 @@ public class NotificationServiceImpl implements INotificationService {
         ));
         
         Notification savedNotification = notificationRepository.save(notification);
-        
-        // Send email notification
         emailService.sendTaskAssignmentEmail(assignee, task);
         
         return savedNotification;
@@ -67,8 +57,6 @@ public class NotificationServiceImpl implements INotificationService {
         ));
         
         Notification savedNotification = notificationRepository.save(notification);
-        
-        // Send email notification
         emailService.sendProjectInvitationEmail(invitee, project.getName(), inviterName);
         
         return savedNotification;
@@ -88,9 +76,9 @@ public class NotificationServiceImpl implements INotificationService {
 
     @Override
     @Transactional
-    public Notification markAsRead(Long notificationId) {
-        Notification notification = notificationRepository.findById(notificationId)
-                .orElseThrow(() -> new ResourceNotFoundException("Notification not found with id: " + notificationId));
+    public Notification markAsRead(Long notificationId) throws ResourceNotFoundException {
+        Notification notification = notificationRepository.findByIdWithRelations(notificationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Notification", notificationId));
         
         notification.setIsRead(true);
         notification.setReadAt(LocalDateTime.now());

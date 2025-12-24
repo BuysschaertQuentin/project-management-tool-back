@@ -1,20 +1,22 @@
 package com.iscod.project_management_tool_back.repository;
 
-import com.iscod.project_management_tool_back.dto.login.LoginRequestDTO;
-import com.iscod.project_management_tool_back.entity.PmtUser;
-import com.iscod.project_management_tool_back.exception.ResourceNotFoundException;
-import com.iscod.project_management_tool_back.service.impl.PmtUserServiceImpl;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 
-import javax.naming.AuthenticationException;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import com.iscod.project_management_tool_back.dto.login.LoginRequestDTO;
+import com.iscod.project_management_tool_back.entity.PmtUser;
+import com.iscod.project_management_tool_back.exception.AuthenticationException;
+import com.iscod.project_management_tool_back.exception.ResourceNotFoundException;
+import com.iscod.project_management_tool_back.service.impl.PmtUserServiceImpl;
 
 class PmtUserServiceImplTest {
 
@@ -30,7 +32,7 @@ class PmtUserServiceImplTest {
     }
 
     @Test
-    void login_ShouldReturnUser_WhenCredentialsValid() {
+    void login_ShouldReturnUser_WhenCredentialsValid() throws AuthenticationException {
         LoginRequestDTO request = new LoginRequestDTO();
         request.setEmail("john@example.com");
         request.setPassword("password123");
@@ -75,7 +77,7 @@ class PmtUserServiceImplTest {
     }
 
     @Test
-    void findById_ShouldReturnUser_WhenExists() {
+    void findById_ShouldReturnUser_WhenExists() throws ResourceNotFoundException {
         PmtUser user = new PmtUser();
         user.setId(1L);
         user.setUsername("john");

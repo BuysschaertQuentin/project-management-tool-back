@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.iscod.project_management_tool_back.entity.ProjectMember;
@@ -15,7 +17,17 @@ public interface IProjectMemberRepository extends JpaRepository<ProjectMember, L
 
     Optional<ProjectMember> findByProjectIdAndUserId(Long projectId, Long userId);
 
-    List<ProjectMember> findByProjectId(Long projectId);
+    @Query("SELECT pm FROM ProjectMember pm " +
+           "LEFT JOIN FETCH pm.project " +
+           "LEFT JOIN FETCH pm.user " +
+           "WHERE pm.project.id = :projectId")
+    List<ProjectMember> findByProjectId(@Param("projectId") Long projectId);
+
+    @Query("SELECT pm FROM ProjectMember pm " +
+           "LEFT JOIN FETCH pm.project " +
+           "LEFT JOIN FETCH pm.user " +
+           "WHERE pm.id = :id")
+    Optional<ProjectMember> findByIdWithRelations(@Param("id") Long id);
 
     List<ProjectMember> findByUserId(Long userId);
 }

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.iscod.project_management_tool_back.datamapper.PmtUserDatamapper;
 import com.iscod.project_management_tool_back.dto.login.UserResponseDTO;
 import com.iscod.project_management_tool_back.entity.PmtUser;
+import com.iscod.project_management_tool_back.exception.ResourceNotFoundException;
 import com.iscod.project_management_tool_back.service.IPmtUserService;
 
 import lombok.RequiredArgsConstructor;
@@ -34,7 +35,8 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponseDTO> getUserById(@PathVariable Long id) {
+    public ResponseEntity<UserResponseDTO> getUserById(@PathVariable Long id) 
+            throws ResourceNotFoundException {
         PmtUser user = userService.findById(id);
         return ResponseEntity.ok(userMapper.toDTO(user));
     }

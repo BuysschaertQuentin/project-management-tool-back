@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.iscod.project_management_tool_back.datamapper.NotificationMapper;
 import com.iscod.project_management_tool_back.dto.notification.NotificationResponseDTO;
 import com.iscod.project_management_tool_back.entity.Notification;
+import com.iscod.project_management_tool_back.exception.ResourceNotFoundException;
 import com.iscod.project_management_tool_back.service.INotificationService;
 
 import lombok.RequiredArgsConstructor;
@@ -44,7 +45,8 @@ public class NotificationController {
     }
 
     @PutMapping("/notifications/{id}/read")
-    public ResponseEntity<NotificationResponseDTO> markAsRead(@PathVariable Long id) {
+    public ResponseEntity<NotificationResponseDTO> markAsRead(@PathVariable Long id) 
+            throws ResourceNotFoundException {
         Notification notification = notificationService.markAsRead(id);
         return ResponseEntity.ok(notificationMapper.toDTO(notification));
     }

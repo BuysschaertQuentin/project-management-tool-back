@@ -14,6 +14,7 @@ import com.iscod.project_management_tool_back.entity.Project;
 import com.iscod.project_management_tool_back.entity.ProjectMember;
 import com.iscod.project_management_tool_back.entity.pmtenum.ProjectRoleEnum;
 import com.iscod.project_management_tool_back.exception.BadRequestException;
+import com.iscod.project_management_tool_back.exception.ConflictException;
 import com.iscod.project_management_tool_back.exception.ResourceNotFoundException;
 import com.iscod.project_management_tool_back.repository.IPmtUserRepository;
 import com.iscod.project_management_tool_back.repository.IProjectMemberRepository;
@@ -22,10 +23,6 @@ import com.iscod.project_management_tool_back.service.IProjectService;
 
 import lombok.RequiredArgsConstructor;
 
-/**
- * Implementation of the IProjectService interface.
- * Handles project creation, retrieval, and member management operations.
- */
 @Service
 @RequiredArgsConstructor
 public class ProjectServiceImpl implements IProjectService {
@@ -34,18 +31,11 @@ public class ProjectServiceImpl implements IProjectService {
     private final IPmtUserRepository userRepository;
     private final IProjectMemberRepository projectMemberRepository;
 
-    /**
-     * Creates a new project and automatically adds the creator as an ADMIN member.
-     * 
-     * SECURITY NOTE: In a production environment, the createdById should be
-     * extracted from the authenticated user's security context (JWT token),
-     * not from the request body.
-     */
     @Override
     @Transactional
-    public Project createProject(ProjectRequestDTO request) {
+    public Project createProject(ProjectRequestDTO request) throws ResourceNotFoundException {
         PmtUser creator = userRepository.findById(request.getCreatedByUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + request.getCreatedByUserId()));
+                .orElseThrow(() -> new ResourceNotFoundException("User", request.getCreatedByUserId()));
 
         Project project = new Project();
         project.setName(request.getName());
@@ -55,7 +45,6 @@ public class ProjectServiceImpl implements IProjectService {
 
         Project savedProject = projectRepository.save(project);
 
-        // Add creator as ADMIN member of the project
         ProjectMember adminMember = new ProjectMember();
         adminMember.setProject(savedProject);
         adminMember.setUser(creator);
@@ -66,35 +55,24 @@ public class ProjectServiceImpl implements IProjectService {
         return savedProject;
     }
 
-    /**
-     * Finds a project by its unique identifier.
-     * 
-     * SECURITY NOTE: In production, this method should verify that the
-     * requesting user is a member of the project before returning it.
-     */
     @Override
     @Transactional(readOnly = true)
-    public Project findById(Long id) {
-        return projectRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Project not found with id: " + id));
+    public Project findById(Long id) throws ResourceNotFoundException {
+        return projectRepository.findByIdWithRelations(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Project", id));
     }
 
-    /**
-     * Invites a user to a project by their email address.
-     * 
-     * SECURITY NOTE: In production, you should verify that the requesting user
-     * is an ADMIN of the project before allowing them to invite members.
-     */
     @Override
     @Transactional
-    public ProjectMember inviteMember(Long projectId, InviteMemberRequestDTO request) {
+    public ProjectMember inviteMember(Long projectId, InviteMemberRequestDTO request) 
+            throws ResourceNotFoundException, ConflictException, BadRequestException {
         Project project = findById(projectId);
 
         PmtUser user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + request.getEmail()));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "email", request.getEmail()));
 
         if (projectMemberRepository.existsByProjectIdAndUserId(projectId, user.getId())) {
-            throw new BadRequestException("User is already a member of this project");
+            throw new ConflictException("User is already a member of this project");
         }
 
         ProjectRoleEnum role;
@@ -113,50 +91,34 @@ public class ProjectServiceImpl implements IProjectService {
         return projectMemberRepository.save(member);
     }
 
-    /**
-     * Gets all members of a project.
-     * 
-     * SECURITY NOTE: In production, verify that the requesting user
-     * is a member of the project before returning the member list.
-     */
     @Override
     @Transactional(readOnly = true)
-    public List<ProjectMember> getProjectMembers(Long projectId) {
+    public List<ProjectMember> getProjectMembers(Long projectId) throws ResourceNotFoundException {
         findById(projectId);
         return projectMemberRepository.findByProjectId(projectId);
     }
 
-    /**
-     * Updates the role of a project member.
-     * 
-     * SECURITY NOTE: In production, you should verify that the requesting user
-     * is an ADMIN of the project before allowing them to change member roles.
-     */
     @Override
     @Transactional
-    public ProjectMember updateMemberRole(Long projectId, Long memberId, UpdateMemberRoleDTO request) {
-        // Verify project exists
+    public ProjectMember updateMemberRole(Long projectId, Long memberId, UpdateMemberRoleDTO request) 
+            throws ResourceNotFoundException, BadRequestException {
         findById(projectId);
 
-        // Find the member
-        ProjectMember member = projectMemberRepository.findById(memberId)
-                .orElseThrow(() -> new ResourceNotFoundException("Member not found with id: " + memberId));
+        ProjectMember member = projectMemberRepository.findByIdWithRelations(memberId)
+                .orElseThrow(() -> new ResourceNotFoundException("ProjectMember", memberId));
 
-        // Verify member belongs to this project
         if (!member.getProject().getId().equals(projectId)) {
             throw new BadRequestException("Member does not belong to this project");
         }
 
-        // Parse and validate the new role
         ProjectRoleEnum newRole;
         try {
             newRole = ProjectRoleEnum.fromString(request.getRole());
         } catch (IllegalArgumentException e) {
-            throw new BadRequestException("Invalid role: " + request.getRole() + ". Valid roles are: ADMIN, MEMBER, OBSERVER");
+            throw new BadRequestException("role", "Valid roles are: ADMIN, MEMBER, OBSERVER");
         }
 
         member.setRole(newRole);
         return projectMemberRepository.save(member);
     }
 }
-

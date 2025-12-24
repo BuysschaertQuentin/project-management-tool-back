@@ -2,23 +2,20 @@ package com.iscod.project_management_tool_back.service.impl;
 
 import java.util.List;
 
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.iscod.project_management_tool_back.dto.login.LoginRequestDTO;
 import com.iscod.project_management_tool_back.dto.login.RegisterRequestDTO;
 import com.iscod.project_management_tool_back.entity.PmtUser;
-import com.iscod.project_management_tool_back.exception.BadRequestException;
+import com.iscod.project_management_tool_back.exception.AuthenticationException;
+import com.iscod.project_management_tool_back.exception.ConflictException;
 import com.iscod.project_management_tool_back.exception.ResourceNotFoundException;
 import com.iscod.project_management_tool_back.repository.IPmtUserRepository;
 import com.iscod.project_management_tool_back.service.IPmtUserService;
 
 import lombok.RequiredArgsConstructor;
 
-/**
- * Implementation of the IPmtUserService interface.
- * Handles user authentication, registration, and retrieval operations.
- */
 @Service
 @RequiredArgsConstructor
 public class PmtUserServiceImpl implements IPmtUserService {
@@ -26,44 +23,47 @@ public class PmtUserServiceImpl implements IPmtUserService {
     private final IPmtUserRepository userRepository;
 
     @Override
-    public PmtUser login(LoginRequestDTO request) {
-        return userRepository.findByEmail(request.getEmail())
-                .filter(user -> user.getPassword().equals(request.getPassword()))
-                .orElseThrow(() -> new AuthenticationException("Invalid email or password") {
-                });
+    @Transactional(readOnly = true)
+    public PmtUser login(LoginRequestDTO request) throws AuthenticationException {
+        PmtUser user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new AuthenticationException("Invalid email or password"));
+        
+        // TODO: In production, use BCrypt to compare hashed passwords
+        if (!user.getPassword().equals(request.getPassword())) {
+            throw new AuthenticationException("Invalid email or password");
+        }
+        
+        return user;
     }
 
-    /**
-     * Register a new user.
-     * 
-     * SECURITY NOTE: In production, the password should be hashed using BCrypt
-     * before saving to database. Example:
-     * user.setPassword(passwordEncoder.encode(request.getPassword()));
-     */
     @Override
-    public PmtUser register(RegisterRequestDTO request) {
+    @Transactional
+    public PmtUser register(RegisterRequestDTO request) throws ConflictException {
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new BadRequestException("Email is already in use");
+            throw new ConflictException("User", "email", request.getEmail());
         }
         if (userRepository.existsByUsername(request.getUsername())) {
-            throw new BadRequestException("Username is already taken");
+            throw new ConflictException("User", "username", request.getUsername());
         }
+        
         PmtUser newUser = new PmtUser();
         newUser.setUsername(request.getUsername());
         newUser.setEmail(request.getEmail());
-        // SECURITY NOTE: Password should be hashed in production
+        // TODO: In production, hash password with BCrypt
         newUser.setPassword(request.getPassword());
 
         return userRepository.save(newUser);
     }
 
     @Override
-    public PmtUser findById(Long id) {
+    @Transactional(readOnly = true)
+    public PmtUser findById(Long id) throws ResourceNotFoundException {
         return userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("User", id));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<PmtUser> getAllUsers() {
         return userRepository.findAll();
     }

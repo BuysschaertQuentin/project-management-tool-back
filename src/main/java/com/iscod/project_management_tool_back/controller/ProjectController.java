@@ -21,6 +21,9 @@ import com.iscod.project_management_tool_back.dto.project.ProjectResponseDTO;
 import com.iscod.project_management_tool_back.dto.project.UpdateMemberRoleDTO;
 import com.iscod.project_management_tool_back.entity.Project;
 import com.iscod.project_management_tool_back.entity.ProjectMember;
+import com.iscod.project_management_tool_back.exception.BadRequestException;
+import com.iscod.project_management_tool_back.exception.ConflictException;
+import com.iscod.project_management_tool_back.exception.ResourceNotFoundException;
 import com.iscod.project_management_tool_back.service.IProjectService;
 
 import jakarta.validation.Valid;
@@ -35,13 +38,15 @@ public class ProjectController {
     private final ProjectMapper projectMapper;
 
     @PostMapping
-    public ResponseEntity<ProjectResponseDTO> createProject(@Valid @RequestBody ProjectRequestDTO request) {
+    public ResponseEntity<ProjectResponseDTO> createProject(@Valid @RequestBody ProjectRequestDTO request) 
+            throws ResourceNotFoundException {
         Project project = projectService.createProject(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(projectMapper.toDTO(project));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProjectResponseDTO> getProjectById(@PathVariable Long id) {
+    public ResponseEntity<ProjectResponseDTO> getProjectById(@PathVariable Long id) 
+            throws ResourceNotFoundException {
         Project project = projectService.findById(id);
         return ResponseEntity.ok(projectMapper.toDTO(project));
     }
@@ -49,13 +54,15 @@ public class ProjectController {
     @PostMapping("/{id}/members")
     public ResponseEntity<ProjectMemberResponseDTO> inviteMember(
             @PathVariable Long id,
-            @Valid @RequestBody InviteMemberRequestDTO request) {
+            @Valid @RequestBody InviteMemberRequestDTO request) 
+            throws ResourceNotFoundException, ConflictException, BadRequestException {
         ProjectMember member = projectService.inviteMember(id, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(projectMapper.toMemberDTO(member));
     }
 
     @GetMapping("/{id}/members")
-    public ResponseEntity<List<ProjectMemberResponseDTO>> getProjectMembers(@PathVariable Long id) {
+    public ResponseEntity<List<ProjectMemberResponseDTO>> getProjectMembers(@PathVariable Long id) 
+            throws ResourceNotFoundException {
         List<ProjectMember> members = projectService.getProjectMembers(id);
         List<ProjectMemberResponseDTO> response = members.stream()
                 .map(projectMapper::toMemberDTO)
@@ -67,7 +74,8 @@ public class ProjectController {
     public ResponseEntity<ProjectMemberResponseDTO> updateMemberRole(
             @PathVariable Long id,
             @PathVariable Long memberId,
-            @Valid @RequestBody UpdateMemberRoleDTO request) {
+            @Valid @RequestBody UpdateMemberRoleDTO request) 
+            throws ResourceNotFoundException, BadRequestException {
         ProjectMember member = projectService.updateMemberRole(id, memberId, request);
         return ResponseEntity.ok(projectMapper.toMemberDTO(member));
     }
