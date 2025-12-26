@@ -27,4 +27,6 @@ public interface ITaskService {
 
     List<Task> getTasksByProjectAndStatus(Long projectId, TaskStatusEnum status) 
             throws ResourceNotFoundException;
+
+    void deleteTask(Long id) throws ResourceNotFoundException;
 }

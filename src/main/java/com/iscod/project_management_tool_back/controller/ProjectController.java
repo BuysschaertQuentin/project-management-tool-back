@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -51,6 +52,13 @@ public class ProjectController {
         return ResponseEntity.ok(projectMapper.toDTO(project));
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteProject(@PathVariable Long id) 
+            throws ResourceNotFoundException {
+        projectService.deleteProject(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @PostMapping("/{id}/members")
     public ResponseEntity<ProjectMemberResponseDTO> inviteMember(
             @PathVariable Long id,
@@ -78,5 +86,14 @@ public class ProjectController {
             throws ResourceNotFoundException, BadRequestException {
         ProjectMember member = projectService.updateMemberRole(id, memberId, request);
         return ResponseEntity.ok(projectMapper.toMemberDTO(member));
+    }
+
+    @DeleteMapping("/{id}/members/{memberId}")
+    public ResponseEntity<Void> removeMember(
+            @PathVariable Long id,
+            @PathVariable Long memberId) 
+            throws ResourceNotFoundException, BadRequestException {
+        projectService.removeMember(id, memberId);
+        return ResponseEntity.noContent().build();
     }
 }

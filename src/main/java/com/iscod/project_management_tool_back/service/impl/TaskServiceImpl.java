@@ -167,4 +167,11 @@ public class TaskServiceImpl implements ITaskService {
         projectService.findById(projectId);
         return taskRepository.findByProjectIdAndStatus(projectId, status);
     }
+
+    @Override
+    @Transactional
+    public void deleteTask(Long id) throws ResourceNotFoundException {
+        Task task = findById(id);
+        taskRepository.delete(task);
+    }
 }

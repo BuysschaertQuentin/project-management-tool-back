@@ -72,7 +72,8 @@ public class UserController {
         // Verify user exists
         userService.findById(id);
         
-        List<Task> tasks = taskRepository.findByAssignedToId(id);
+        // Get tasks where user is assigned OR creator
+        List<Task> tasks = taskRepository.findByUserIdAssignedOrCreated(id);
         List<TaskResponseDTO> response = tasks.stream()
                 .map(taskMapper::toDTO)
                 .collect(Collectors.toList());

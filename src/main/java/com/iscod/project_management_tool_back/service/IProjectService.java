@@ -17,11 +17,16 @@ public interface IProjectService {
 
     Project findById(Long id) throws ResourceNotFoundException;
 
+    void deleteProject(Long id) throws ResourceNotFoundException;
+
     ProjectMember inviteMember(Long projectId, InviteMemberRequestDTO request) 
             throws ResourceNotFoundException, ConflictException, BadRequestException;
 
     List<ProjectMember> getProjectMembers(Long projectId) throws ResourceNotFoundException;
 
     ProjectMember updateMemberRole(Long projectId, Long memberId, UpdateMemberRoleDTO request) 
+            throws ResourceNotFoundException, BadRequestException;
+
+    void removeMember(Long projectId, Long memberId) 
             throws ResourceNotFoundException, BadRequestException;
 }

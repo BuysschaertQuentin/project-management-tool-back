@@ -121,4 +121,30 @@ public class ProjectServiceImpl implements IProjectService {
         member.setRole(newRole);
         return projectMemberRepository.save(member);
     }
+
+    @Override
+    @Transactional
+    public void deleteProject(Long id) throws ResourceNotFoundException {
+        Project project = findById(id);
+        // Delete all members first
+        projectMemberRepository.deleteAll(projectMemberRepository.findByProjectId(id));
+        // Then delete project
+        projectRepository.delete(project);
+    }
+
+    @Override
+    @Transactional
+    public void removeMember(Long projectId, Long memberId) 
+            throws ResourceNotFoundException, BadRequestException {
+        findById(projectId);
+
+        ProjectMember member = projectMemberRepository.findByIdWithRelations(memberId)
+                .orElseThrow(() -> new ResourceNotFoundException("ProjectMember", memberId));
+
+        if (!member.getProject().getId().equals(projectId)) {
+            throw new BadRequestException("Member does not belong to this project");
+        }
+
+        projectMemberRepository.delete(member);
+    }
 }

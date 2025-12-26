@@ -287,4 +287,24 @@ class TaskServiceImplTest {
         assertEquals(1, result.size());
         assertEquals(TaskStatusEnum.TODO, result.get(0).getStatus());
     }
+
+    // ==================== DELETE TASK TESTS ====================
+
+    @Test
+    @DisplayName("deleteTask - should delete task successfully")
+    void deleteTask_shouldDeleteTask() throws ResourceNotFoundException {
+        when(taskRepository.findByIdWithRelations(1L)).thenReturn(Optional.of(testTask));
+
+        taskService.deleteTask(1L);
+
+        verify(taskRepository).delete(testTask);
+    }
+
+    @Test
+    @DisplayName("deleteTask - should throw when task not found")
+    void deleteTask_shouldThrow_whenTaskNotFound() {
+        when(taskRepository.findByIdWithRelations(99L)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> taskService.deleteTask(99L));
+    }
 }

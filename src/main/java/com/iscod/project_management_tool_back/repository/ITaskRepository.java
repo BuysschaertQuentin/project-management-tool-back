@@ -38,5 +38,11 @@ public interface ITaskRepository extends JpaRepository<Task, Long> {
 
     List<Task> findByProjectId(Long projectId);
 
-    List<Task> findByAssignedToId(Long userId);
+    @Query("SELECT DISTINCT t FROM Task t " +
+           "LEFT JOIN FETCH t.project " +
+           "LEFT JOIN FETCH t.assignedTo " +
+           "LEFT JOIN FETCH t.createdBy " +
+           "WHERE t.assignedTo.id = :userId OR t.createdBy.id = :userId " +
+           "ORDER BY t.updatedAt DESC")
+    List<Task> findByUserIdAssignedOrCreated(@Param("userId") Long userId);
 }

@@ -265,4 +265,66 @@ class ProjectServiceImplTest {
         assertThrows(BadRequestException.class, 
             () -> projectService.updateMemberRole(1L, 1L, request));
     }
+
+    // ==================== DELETE PROJECT TESTS ====================
+
+    @Test
+    @DisplayName("deleteProject - should delete project and members")
+    void deleteProject_shouldDeleteProjectAndMembers() throws ResourceNotFoundException {
+        when(projectRepository.findByIdWithRelations(1L)).thenReturn(Optional.of(testProject));
+        when(projectMemberRepository.findByProjectId(1L)).thenReturn(Arrays.asList(testMember));
+
+        projectService.deleteProject(1L);
+
+        verify(projectMemberRepository).deleteAll(any());
+        verify(projectRepository).delete(testProject);
+    }
+
+    @Test
+    @DisplayName("deleteProject - should throw when project not found")
+    void deleteProject_shouldThrow_whenProjectNotFound() {
+        when(projectRepository.findByIdWithRelations(99L)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> projectService.deleteProject(99L));
+        verify(projectRepository, never()).delete(any());
+    }
+
+    // ==================== REMOVE MEMBER TESTS ====================
+
+    @Test
+    @DisplayName("removeMember - should remove member from project")
+    void removeMember_shouldRemoveMember() throws Exception {
+        when(projectRepository.findByIdWithRelations(1L)).thenReturn(Optional.of(testProject));
+        when(projectMemberRepository.findByIdWithRelations(1L)).thenReturn(Optional.of(testMember));
+
+        projectService.removeMember(1L, 1L);
+
+        verify(projectMemberRepository).delete(testMember);
+    }
+
+    @Test
+    @DisplayName("removeMember - should throw when member not found")
+    void removeMember_shouldThrow_whenMemberNotFound() {
+        when(projectRepository.findByIdWithRelations(1L)).thenReturn(Optional.of(testProject));
+        when(projectMemberRepository.findByIdWithRelations(99L)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, 
+            () -> projectService.removeMember(1L, 99L));
+        verify(projectMemberRepository, never()).delete(any(ProjectMember.class));
+    }
+
+    @Test
+    @DisplayName("removeMember - should throw when member not in project")
+    void removeMember_shouldThrow_whenMemberNotInProject() {
+        Project otherProject = new Project();
+        otherProject.setId(2L);
+        testMember.setProject(otherProject);
+
+        when(projectRepository.findByIdWithRelations(1L)).thenReturn(Optional.of(testProject));
+        when(projectMemberRepository.findByIdWithRelations(1L)).thenReturn(Optional.of(testMember));
+
+        assertThrows(BadRequestException.class, 
+            () -> projectService.removeMember(1L, 1L));
+        verify(projectMemberRepository, never()).delete(any(ProjectMember.class));
+    }
 }
