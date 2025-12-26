@@ -65,6 +65,17 @@ public class TaskServiceImpl implements ITaskService {
         task.setStatus(TaskStatusEnum.TODO);
         task.setCreatedBy(creator);
 
+        // Handle optional assignee
+        if (request.getAssignedToUserId() != null) {
+            PmtUser assignee = userRepository.findById(request.getAssignedToUserId())
+                    .orElseThrow(() -> new ResourceNotFoundException("User", request.getAssignedToUserId()));
+            
+            if (!projectMemberRepository.existsByProjectIdAndUserId(projectId, assignee.getId())) {
+                throw new BadRequestException("Assignee is not a member of this project");
+            }
+            task.setAssignedTo(assignee);
+        }
+
         Task savedTask = taskRepository.save(task);
         taskHistoryService.recordCreation(savedTask, creator);
 

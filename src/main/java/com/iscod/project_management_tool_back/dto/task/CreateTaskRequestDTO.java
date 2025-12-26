@@ -29,4 +29,7 @@ public class CreateTaskRequestDTO {
 
     @NotNull(message = "Creator user ID is required")
     private Long createdByUserId;
+
+    // Optional: assign task to a specific user
+    private Long assignedToUserId;
 }
