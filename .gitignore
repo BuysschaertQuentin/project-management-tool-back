@@ -35,6 +35,6 @@ build/
 #Environment variables
 .env
 
-# Local config with credentials
-**/application-local.properties
+# Dev config with credentials (gitignored - use application-dev.properties.example as template)
+**/application-dev.properties
 CREDENTIALS_FOR_EXAMINER.md

@@ -1,15 +1,15 @@
-# Local environment configuration (remote PostgreSQL on AlwaysData)
+# Development environment configuration (remote PostgreSQL on AlwaysData)
 # 
 # INSTRUCTIONS:
-# 1. Copy this file to application-local.properties
+# 1. Copy this file to application-dev.properties
 # 2. Replace placeholders with actual credentials (provided separately)
-# 3. Run: mvn spring-boot:run -Dspring-boot.run.profiles=local
+# 3. Run: mvn spring-boot:run -Dspring-boot.run.profiles=dev
 
 spring.datasource.url=jdbc:postgresql://<DATABASE_HOST>:<DATABASE_PORT>/<DATABASE_NAME>
 spring.datasource.username=<DATABASE_USERNAME>
 spring.datasource.password=<DATABASE_PASSWORD>
 
-# JPA/Hibernate settings for local development
+# JPA/Hibernate settings for development
 spring.jpa.show-sql=true
 spring.jpa.properties.hibernate.format_sql=true
 spring.jpa.hibernate.ddl-auto=update
