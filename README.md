@@ -222,28 +222,38 @@ La collection contient les requêtes suivantes organisées par catégorie :
 
 ## 💻 Lancement en local (sans Docker)
 
-### Étape 1 : Configurer PostgreSQL
+### Étape 1 : Configurer le fichier de propriétés
 
-Créez une base de données PostgreSQL :
-
-```sql
-CREATE DATABASE "project-management-tool";
-```
-
-### Étape 2 : Configurer les variables d'environnement
-
-Créez un fichier `.env` ou configurez les variables :
-
-```properties
-DATABASE_USERNAME=postgres
-DATABASE_PASSWORD=postgres
-```
-
-### Étape 3 : Lancer l'application
+Copiez le fichier template et remplissez les credentials :
 
 ```bash
-mvn spring-boot:run
+cp src/main/resources/application-dev.properties.example src/main/resources/application-dev.properties
 ```
+
+Éditez `application-dev.properties` avec vos credentials de base de données.
+
+### Étape 2 : Lancer l'application
+
+#### PowerShell (Windows) - ⚠️ IMPORTANT
+
+```powershell
+$env:SPRING_PROFILES_ACTIVE="dev"
+.\mvnw.cmd spring-boot:run
+```
+
+#### Bash (Linux/Mac/Git Bash)
+
+```bash
+SPRING_PROFILES_ACTIVE=dev ./mvnw spring-boot:run
+```
+
+#### Alternative avec Maven
+
+```bash
+mvn spring-boot:run -Dspring-boot.run.profiles=dev
+```
+
+> **⚠️ Note :** Sans définir le profil `dev`, l'application tentera de se connecter à une base locale inexistante et échouera.
 
 L'API sera disponible sur `http://localhost:8080`
 
