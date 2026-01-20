@@ -328,9 +328,22 @@ target/site/jacoco/index.html
 4. Tests unitaires avec mocking (pas de base embarquée)
 5. Configuration Docker multi-environnements
 
-### Déploiement
+### Déploiement sur Render (Cloud)
 
-L'application est également déployée sur Render (cloud) avec le profil `production`.
+> **Note importante concernant le déploiement cloud**
+
+L'application a été initialement déployée sur **[Render](https://render.com/)** en mode gratuit avec le profil `production`. Cependant, en raison du délai entre la soumission du projet et la correction, **le service gratuit Render a expiré** (les instances gratuites sont désactivées après une période d'inactivité).
+
+**Situation actuelle :**
+
+- ❌ Le déploiement Render n'est plus accessible
+- ✅ L'application fonctionne parfaitement en local via Docker Compose (voir section Docker ci-dessus)
+
+**Si un déploiement cloud est nécessaire :**
+
+Sur demande de l'examinateur, je peux recréer un compte Render et redéployer l'application pour démonstration. Le déploiement prend environ 5-10 minutes.
+
+Pour toute demande, merci de me contacter.
 
 ---
 
