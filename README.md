@@ -15,10 +15,12 @@
 ## 🔧 Prérequis
 
 ### Pour lancer avec Docker (recommandé)
+
 - **Docker Desktop** : [Télécharger ici](https://www.docker.com/products/docker-desktop)
 - **Bruno** (client API) : [Télécharger ici](https://www.usebruno.com/downloads)
 
 ### Pour lancer en local (sans Docker)
+
 - **Java 21** : [Télécharger ici](https://adoptium.net/)
 - **Maven 3.9+** : [Télécharger ici](https://maven.apache.org/download.cgi)
 - **PostgreSQL 17** : [Télécharger ici](https://www.postgresql.org/download/)
@@ -40,6 +42,7 @@ docker-compose up -d --build
 ```
 
 Cette commande lance automatiquement :
+
 - ✅ **Backend API** sur `http://localhost:8080`
 - ✅ **PostgreSQL** sur le port `5432`
 - ✅ **PgAdmin** sur `http://localhost:5050` (admin@example.com / admin)
@@ -62,6 +65,76 @@ docker-compose down
 
 # Arrêter et supprimer les volumes (reset de la BDD)
 docker-compose down -v
+```
+
+---
+
+## 🚀 Premiers pas : Créer votre premier utilisateur
+
+Une fois les services démarrés, vous devez créer un compte utilisateur pour utiliser l'application.
+
+### Via Bruno (recommandé)
+
+1. Ouvrez Bruno et chargez la collection (voir section suivante)
+2. Allez dans **Auth > Register**
+3. Modifiez le body JSON avec vos informations
+
+### Via cURL / PowerShell
+
+**Windows PowerShell :**
+
+```powershell
+Invoke-WebRequest -Uri "http://localhost:8080/api/auth/register" `
+  -Method POST `
+  -ContentType "application/json" `
+  -Body '{"username":"VOTRE_PSEUDO","email":"VOTRE_EMAIL@exemple.com","password":"VOTRE_MOT_DE_PASSE"}'
+```
+
+**Linux / Mac / Git Bash :**
+
+```bash
+curl -X POST http://localhost:8080/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"username":"VOTRE_PSEUDO","email":"VOTRE_EMAIL@exemple.com","password":"VOTRE_MOT_DE_PASSE"}'
+```
+
+### ⚠️ Règles de validation
+
+| Champ        | Règles                                                                                                                                                                                                    |
+| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **username** | Entre 3 et 50 caractères                                                                                                                                                                                  |
+| **email**    | Format email valide (ex: `john@example.com`)                                                                                                                                                              |
+| **password** | **Minimum 8 caractères** et doit contenir : <br>• Au moins 1 lettre majuscule (A-Z) <br>• Au moins 1 lettre minuscule (a-z) <br>• Au moins 1 chiffre (0-9) <br>• Au moins 1 caractère spécial (!@#$%^&\*) |
+
+### ✅ Exemples de mots de passe valides
+
+| Mot de passe  | Valide ? | Explication                                                 |
+| ------------- | -------- | ----------------------------------------------------------- |
+| `MonPass123!` | ✅ Oui   | Contient majuscule, minuscule, chiffre et caractère spécial |
+| `Test@2024`   | ✅ Oui   | Contient majuscule, minuscule, chiffre et caractère spécial |
+| `password`    | ❌ Non   | Manque majuscule, chiffre et caractère spécial              |
+| `PASSWORD123` | ❌ Non   | Manque minuscule et caractère spécial                       |
+| `Pass123`     | ❌ Non   | Manque caractère spécial                                    |
+
+### Exemple complet
+
+```json
+{
+  "username": "jean_dupont",
+  "email": "jean.dupont@gmail.com",
+  "password": "MonSuperPass123!"
+}
+```
+
+**Réponse attendue (Status 201) :**
+
+```json
+{
+  "id": 1,
+  "username": "jean_dupont",
+  "email": "jean.dupont@gmail.com",
+  "createdAt": "2026-01-20T10:30:00"
+}
 ```
 
 ---
@@ -98,38 +171,42 @@ docker-compose down -v
 La collection contient les requêtes suivantes organisées par catégorie :
 
 #### 🔐 Auth (Authentification)
-| Méthode | Endpoint | Description |
-|---------|----------|-------------|
-| POST | `/api/auth/register` | Créer un nouvel utilisateur |
-| POST | `/api/auth/login` | Se connecter |
-| GET | `/api/auth/{id}` | Récupérer un utilisateur par ID |
+
+| Méthode | Endpoint             | Description                     |
+| ------- | -------------------- | ------------------------------- |
+| POST    | `/api/auth/register` | Créer un nouvel utilisateur     |
+| POST    | `/api/auth/login`    | Se connecter                    |
+| GET     | `/api/auth/{id}`     | Récupérer un utilisateur par ID |
 
 #### 📁 Projects (Projets)
-| Méthode | Endpoint | Description |
-|---------|----------|-------------|
-| POST | `/api/projects` | Créer un projet |
-| GET | `/api/projects/{id}` | Récupérer un projet |
-| GET | `/api/projects/{id}/members` | Lister les membres du projet |
-| POST | `/api/projects/{id}/members` | Inviter un membre |
-| PUT | `/api/projects/{id}/members/{memberId}/role` | Modifier le rôle d'un membre |
+
+| Méthode | Endpoint                                     | Description                  |
+| ------- | -------------------------------------------- | ---------------------------- |
+| POST    | `/api/projects`                              | Créer un projet              |
+| GET     | `/api/projects/{id}`                         | Récupérer un projet          |
+| GET     | `/api/projects/{id}/members`                 | Lister les membres du projet |
+| POST    | `/api/projects/{id}/members`                 | Inviter un membre            |
+| PUT     | `/api/projects/{id}/members/{memberId}/role` | Modifier le rôle d'un membre |
 
 #### ✅ Tasks (Tâches)
-| Méthode | Endpoint | Description |
-|---------|----------|-------------|
-| POST | `/api/projects/{projectId}/tasks` | Créer une tâche |
-| GET | `/api/tasks/{id}` | Récupérer une tâche |
-| PUT | `/api/tasks/{id}` | Modifier une tâche |
-| PUT | `/api/tasks/{id}/assign` | Assigner une tâche |
-| GET | `/api/projects/{projectId}/tasks` | Lister les tâches d'un projet |
-| GET | `/api/tasks/{id}/history` | Voir l'historique d'une tâche |
+
+| Méthode | Endpoint                          | Description                   |
+| ------- | --------------------------------- | ----------------------------- |
+| POST    | `/api/projects/{projectId}/tasks` | Créer une tâche               |
+| GET     | `/api/tasks/{id}`                 | Récupérer une tâche           |
+| PUT     | `/api/tasks/{id}`                 | Modifier une tâche            |
+| PUT     | `/api/tasks/{id}/assign`          | Assigner une tâche            |
+| GET     | `/api/projects/{projectId}/tasks` | Lister les tâches d'un projet |
+| GET     | `/api/tasks/{id}/history`         | Voir l'historique d'une tâche |
 
 #### 🔔 Notifications
-| Méthode | Endpoint | Description |
-|---------|----------|-------------|
-| GET | `/api/users/{userId}/notifications` | Récupérer les notifications |
-| GET | `/api/users/{userId}/notifications/unread` | Notifications non lues |
-| PUT | `/api/notifications/{id}/read` | Marquer comme lue |
-| PUT | `/api/users/{userId}/notifications/read-all` | Tout marquer comme lu |
+
+| Méthode | Endpoint                                     | Description                 |
+| ------- | -------------------------------------------- | --------------------------- |
+| GET     | `/api/users/{userId}/notifications`          | Récupérer les notifications |
+| GET     | `/api/users/{userId}/notifications/unread`   | Notifications non lues      |
+| PUT     | `/api/notifications/{id}/read`               | Marquer comme lue           |
+| PUT     | `/api/users/{userId}/notifications/read-all` | Tout marquer comme lu       |
 
 ### Ordre recommandé pour tester
 
@@ -209,19 +286,21 @@ mvn test jacoco:report
 ### Voir le rapport de couverture
 
 Le rapport HTML est généré dans :
+
 ```
 target/site/jacoco/index.html
 ```
 
 ### Couverture actuelle : **93.55%** ✅
 
-| Module | Couverture |
-|--------|------------|
-| Controllers | 94-100% |
-| Services | 75-100% |
-| Mappers | 100% |
+| Module      | Couverture |
+| ----------- | ---------- |
+| Controllers | 94-100%    |
+| Services    | 75-100%    |
+| Mappers     | 100%       |
 
 ### Classes exclues du coverage
+
 - DTOs (data classes)
 - Entities (persistence)
 - Exceptions
@@ -233,6 +312,7 @@ target/site/jacoco/index.html
 ## 📝 Notes pour le correcteur
 
 ### Technologies utilisées
+
 - **Spring Boot 3.4** - Framework backend
 - **PostgreSQL 17** - Base de données
 - **JUnit 5 + Mockito** - Tests unitaires
@@ -241,6 +321,7 @@ target/site/jacoco/index.html
 - **Bruno** - Client API
 
 ### Points clés de l'implémentation
+
 1. Architecture en couches (Controller → Service → Repository)
 2. Gestion des erreurs centralisée avec `GlobalExceptionHandler`
 3. Validation des données avec Jakarta Validation
@@ -248,6 +329,7 @@ target/site/jacoco/index.html
 5. Configuration Docker multi-environnements
 
 ### Déploiement
+
 L'application est également déployée sur Render (cloud) avec le profil `production`.
 
 ---
@@ -255,6 +337,7 @@ L'application est également déployée sur Render (cloud) avec le profil `produ
 ## 🆘 Dépannage
 
 ### Le backend ne démarre pas
+
 ```bash
 # Vérifier les logs Docker
 docker-compose logs backend
@@ -264,6 +347,7 @@ docker-compose up -d --build --force-recreate
 ```
 
 ### PostgreSQL refuse la connexion
+
 ```bash
 # Vérifier que le container est démarré
 docker-compose ps
@@ -273,6 +357,7 @@ docker-compose logs postgres
 ```
 
 ### Les tests Bruno échouent (404)
+
 1. Vérifiez que l'environnement **"local"** est sélectionné
 2. Vérifiez que le backend est démarré sur `http://localhost:8080`
 3. Testez d'abord l'endpoint Register pour créer des données
