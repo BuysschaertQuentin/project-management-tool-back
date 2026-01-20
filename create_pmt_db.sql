@@ -91,7 +91,7 @@ CREATE INDEX idx_tasks_status ON tasks(status);
 CREATE INDEX idx_task_history_task_id ON task_history(task_id);
 CREATE INDEX idx_notifications_user_id ON notifications(user_id);
 
--- Data Test
+-- Test Data
 INSERT INTO users (username, email, password) VALUES
 ('admin', 'admin@pmt.com', '$2a$10$encrypted_password_here'),
 ('john_doe', 'john@example.com', '$2a$10$encrypted_password_here'),
