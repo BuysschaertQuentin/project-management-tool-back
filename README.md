@@ -108,13 +108,14 @@ curl -X POST http://localhost:8080/api/auth/register \
 
 ### ✅ Exemples de mots de passe valides
 
-| Mot de passe  | Valide ? | Explication                                                 |
-| ------------- | -------- | ----------------------------------------------------------- |
-| `MonPass123!` | ✅ Oui   | Contient majuscule, minuscule, chiffre et caractère spécial |
-| `Test@2024`   | ✅ Oui   | Contient majuscule, minuscule, chiffre et caractère spécial |
-| `password`    | ❌ Non   | Manque majuscule, chiffre et caractère spécial              |
-| `PASSWORD123` | ❌ Non   | Manque minuscule et caractère spécial                       |
-| `Pass123`     | ❌ Non   | Manque caractère spécial                                    |
+| Mot de passe   | Valide ? | Explication                                     |
+| -------------- | -------- | ----------------------------------------------- |
+| `MonPass123@`  | ✅ Oui   | Contient lettre, chiffre et caractère spécial @ |
+| `Test.2024`    | ✅ Oui   | Contient lettre, chiffre et caractère spécial . |
+| `Secure#Pass1` | ✅ Oui   | Contient lettre, chiffre et caractère spécial # |
+| `password`     | ❌ Non   | Manque chiffre et caractère spécial             |
+| `PASSWORD123`  | ❌ Non   | Manque caractère spécial (@#$%^&+=/.-)          |
+| `Pass123!`     | ❌ Non   | Le ! n'est pas dans les caractères acceptés     |
 
 ### Exemple complet
 
@@ -122,7 +123,7 @@ curl -X POST http://localhost:8080/api/auth/register \
 {
   "username": "jean_dupont",
   "email": "jean.dupont@gmail.com",
-  "password": "MonSuperPass123!"
+  "password": "MonSuperPass123@"
 }
 ```
 

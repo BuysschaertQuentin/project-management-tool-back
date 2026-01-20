@@ -34,3 +34,7 @@ build/
 
 #Environment variables
 .env
+
+# Local config with credentials
+**/application-local.properties
+CREDENTIALS_FOR_EXAMINER.md
